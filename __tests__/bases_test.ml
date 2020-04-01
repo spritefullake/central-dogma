@@ -1,8 +1,9 @@
 open Jest
 open Expect
 open Bases
-
+open Belt.Option
 let willBe x y = expect x |> toBe y
+let map_opts f = Array.map (fun i -> Belt.Option.map i f)
 let () =   
 describe "Replication" (fun () -> 
     testAll "Correctly replicates single bases of DNA" 
@@ -36,4 +37,19 @@ describe "Transcription" (fun () ->
         let correct = "TACG" |. Js.String.split "" in
         Array.map display_transcription bases |> expect |> toEqual correct
     );
+);
+describe "DNA and RNA interactions" (fun () -> 
+    test "reverse transcription reverses transcription" (fun () -> 
+        let input = "ATGCGGTAA" |> Js.String.split "" in
+        input 
+        |> Array.map to_dna
+        |> map_opts transcribe
+        |> map_opts reverse_transcribe
+        |> Array.map (function 
+            | None -> ""
+            | Some x -> to_string x
+        )
+        |> expect |> toEqual input
+    );
+
 );

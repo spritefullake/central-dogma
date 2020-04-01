@@ -3,117 +3,107 @@
 
 var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
 
-function replicate_DNA(base) {
-  switch (base) {
-    case /* A */0 :
-        return /* T */1;
-    case /* T */1 :
-        return /* A */0;
-    case /* C */2 :
-        return /* G */3;
-    case /* G */3 :
-        return /* C */2;
-    
+function replicate_DNA(param) {
+  if (param >= 71) {
+    if (param >= 84) {
+      return /* A */65;
+    } else {
+      return /* C */67;
+    }
+  } else if (param >= 67) {
+    return /* G */71;
+  } else {
+    return /* T */84;
   }
 }
 
-function replicate_RNA(base) {
-  switch (base) {
-    case /* A */0 :
-        return /* U */1;
-    case /* U */1 :
-        return /* A */0;
-    case /* C */2 :
-        return /* G */3;
-    case /* G */3 :
-        return /* C */2;
-    
+function replicate_RNA(param) {
+  if (param >= 71) {
+    if (param >= 85) {
+      return /* A */65;
+    } else {
+      return /* C */67;
+    }
+  } else if (param >= 67) {
+    return /* G */71;
+  } else {
+    return /* U */85;
   }
 }
 
-function transcribe(base) {
-  switch (base) {
-    case /* A */0 :
-        return /* U */1;
-    case /* T */1 :
-        return /* A */0;
-    case /* C */2 :
-        return /* G */3;
-    case /* G */3 :
-        return /* C */2;
-    
+function transcribe(param) {
+  if (param >= 71) {
+    if (param >= 84) {
+      return /* A */65;
+    } else {
+      return /* C */67;
+    }
+  } else if (param >= 67) {
+    return /* G */71;
+  } else {
+    return /* U */85;
   }
 }
 
-function reverse_transcribe(base) {
-  switch (base) {
-    case /* A */0 :
-        return /* T */1;
-    case /* U */1 :
-        return /* A */0;
-    case /* C */2 :
-        return /* G */3;
-    case /* G */3 :
-        return /* C */2;
-    
+function reverse_transcribe(param) {
+  if (param >= 71) {
+    if (param >= 85) {
+      return /* A */65;
+    } else {
+      return /* C */67;
+    }
+  } else if (param >= 67) {
+    return /* G */71;
+  } else {
+    return /* T */84;
   }
 }
 
-function to_dna(letter) {
-  switch (letter) {
+function to_dna(param) {
+  switch (param) {
     case "A" :
-        return /* A */0;
+        return /* A */65;
     case "C" :
-        return /* C */2;
+        return /* C */67;
     case "G" :
-        return /* G */3;
+        return /* G */71;
     case "T" :
-        return /* T */1;
+        return /* T */84;
     default:
       return ;
   }
 }
 
-function to_rna(letter) {
-  switch (letter) {
+function to_rna(param) {
+  switch (param) {
     case "A" :
-        return /* A */0;
+        return /* A */65;
     case "C" :
-        return /* C */2;
+        return /* C */67;
     case "G" :
-        return /* G */3;
+        return /* G */71;
     case "U" :
-        return /* U */1;
+        return /* U */85;
     default:
       return ;
   }
 }
 
-function dna_to_string(base) {
-  switch (base) {
-    case /* A */0 :
-        return "A";
-    case /* T */1 :
-        return "T";
-    case /* C */2 :
-        return "C";
-    case /* G */3 :
-        return "G";
-    
-  }
-}
-
-function rna_to_string(base) {
-  switch (base) {
-    case /* A */0 :
-        return "A";
-    case /* U */1 :
+function to_string(param) {
+  if (param !== 67) {
+    if (param >= 84) {
+      if (param >= 85) {
         return "U";
-    case /* C */2 :
-        return "C";
-    case /* G */3 :
-        return "G";
-    
+      } else {
+        return "T";
+      }
+    } else if (param >= 71) {
+      return "G";
+    } else {
+      return "A";
+    }
+  } else {
+    return "C";
   }
 }
 
@@ -128,7 +118,7 @@ function parse_rna(f, letter) {
 function display_transcription(letter) {
   var match = Belt_Option.map(to_dna(letter), transcribe);
   if (match !== undefined) {
-    return rna_to_string(match);
+    return to_string(match);
   } else {
     return "";
   }
@@ -137,7 +127,7 @@ function display_transcription(letter) {
 function display_replication(letter) {
   var match = Belt_Option.map(to_dna(letter), replicate_DNA);
   if (match !== undefined) {
-    return dna_to_string(match);
+    return to_string(match);
   } else {
     return "";
   }
@@ -149,8 +139,7 @@ exports.transcribe = transcribe;
 exports.reverse_transcribe = reverse_transcribe;
 exports.to_dna = to_dna;
 exports.to_rna = to_rna;
-exports.dna_to_string = dna_to_string;
-exports.rna_to_string = rna_to_string;
+exports.to_string = to_string;
 exports.parse_dna = parse_dna;
 exports.parse_rna = parse_rna;
 exports.display_transcription = display_transcription;

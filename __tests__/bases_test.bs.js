@@ -3,10 +3,19 @@
 
 var Jest = require("@glennsl/bs-jest/src/jest.js");
 var $$Array = require("bs-platform/lib/js/array.js");
+var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
 var Bases$Genetics = require("../src/Bases.bs.js");
 
 function willBe(x, y) {
   return Jest.Expect.toBe(y, Jest.Expect.expect(x));
+}
+
+function map_opts(f) {
+  return (function (param) {
+      return $$Array.map((function (i) {
+                    return Belt_Option.map(i, f);
+                  }), param);
+    });
 }
 
 Jest.describe("Replication", (function (param) {
@@ -86,5 +95,19 @@ Jest.describe("Transcription", (function (param) {
                     }));
       }));
 
+Jest.describe("DNA and RNA interactions", (function (param) {
+        return Jest.test("reverse transcription reverses transcription", (function (param) {
+                      var input = "ATGCGGTAA".split("");
+                      return Jest.Expect.toEqual(input, Jest.Expect.expect($$Array.map((function (param) {
+                                            if (param !== undefined) {
+                                              return Bases$Genetics.to_string(param);
+                                            } else {
+                                              return "";
+                                            }
+                                          }), map_opts(Bases$Genetics.reverse_transcribe)(map_opts(Bases$Genetics.transcribe)($$Array.map(Bases$Genetics.to_dna, input))))));
+                    }));
+      }));
+
 exports.willBe = willBe;
+exports.map_opts = map_opts;
 /*  Not a pure module */
