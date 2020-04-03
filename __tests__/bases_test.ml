@@ -42,6 +42,7 @@ describe "DNA and RNA interactions" (fun () ->
     test "reverse transcription reverses transcription" (fun () -> 
         let input = "ATGCGGTAA" |> Js.String.split "" in
         input 
+        |> Array.map to_base
         |> Array.map to_dna
         |> map_opts transcribe
         |> map_opts reverse_transcribe

@@ -1,6 +1,8 @@
 {
   "name": "genetics",
   "version": "0.1.0",
+  "reason": { "react-jsx" : 3 },
+  "bsc-flags" : ["-bs-super-errors", "-bs-no-version-header"],
   "sources": [
     {
       "dir": "src",
@@ -16,7 +18,7 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": [],
+  "bs-dependencies": ["reason-react"],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest"
   ],

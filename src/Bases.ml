@@ -14,7 +14,6 @@ let replicate_RNA = function
   | `U -> `A
   | `C -> `G
   | `G -> `C
-
 let transcribe =  function
   | `A -> `U
   | `T -> `A
@@ -25,20 +24,19 @@ let reverse_transcribe = function
   | `U -> `A
   | `C -> `G
   | `G -> `C
-
-let to_dna = function
+let to_base = function
   | "A" -> Some `A
+  | "U" -> Some `U
   | "T" -> Some `T
   | "C" -> Some `C
   | "G" -> Some `G
   | _ -> None
-let to_rna = function
-  | "A" -> Some `A
-  | "U" -> Some `U
-  | "C" -> Some `C
-  | "G" -> Some `G
+let to_dna = function
+  | Some #dna as x -> x
   | _ -> None
-
+let to_rna = function
+  | Some #rna as x -> x 
+  | _ -> None
 let to_string = function
   | `A -> "A"
   | `U -> "U"
@@ -47,15 +45,23 @@ let to_string = function
   | `T -> "T"
   
 let parse_dna f letter = 
-  letter |> to_dna |. map f
+  letter |> to_base |> to_dna |. map f
 let parse_rna f letter =
-  letter |> to_rna |. map f
+  letter |> to_base |> to_rna |. map f
 
 let display_transcription letter = 
-  match parse_dna transcribe letter with
-  | Some base -> to_string base
-  | None -> ""
+  mapWithDefault (parse_dna transcribe letter) "" to_string  
+
+let display_reverse_transcription letter =
+  mapWithDefault (parse_rna reverse_transcribe letter) "" to_string  
+
 let display_replication letter =
-  match parse_dna replicate_DNA letter with
-  | Some base -> to_string base
-  | None -> ""
+  mapWithDefault (parse_dna replicate_DNA letter) "" to_string
+
+let process (input : string) : string array =
+  let length = String.length input in
+  let result = Array.make length "" in
+  for i = 0 to length - 1 do
+    result.(i) <- (String.sub input i 1)
+  done;
+  result
