@@ -27,7 +27,7 @@ function Input(Props) {
   var setSeq = match$1[1];
   var seq = match$1[0];
   var updateSeq = function (e) {
-    var value = $$Array.map(NucleicAcid$Genetics.filter(baseType), $$Array.map(Bases$Genetics.to_base, e.target.value.toUpperCase().split("")));
+    var value = $$Array.map(Bases$Genetics.to_base, e.target.value.toUpperCase().split(""));
     return Curry._1(setSeq, (function (param) {
                   return value;
                 }));
@@ -41,19 +41,19 @@ function Input(Props) {
               /* tuple */[
                 "Transcribed RNA",
                 Bases$Genetics.seq_to_string((function (param) {
-                        return Bases$Genetics.parse_dna(Bases$Genetics.transcribe, param);
+                        return Bases$Genetics.parse(Bases$Genetics.transcribe, param);
                       }), seq)
               ],
               /* tuple */[
                 "Replicated DNA",
                 Bases$Genetics.seq_to_string((function (param) {
-                        return Bases$Genetics.parse_dna(Bases$Genetics.replicate_DNA, param);
+                        return Bases$Genetics.parse(Bases$Genetics.replicate_DNA, param);
                       }), seq)
               ],
               /* tuple */[
                 "Codons",
                 getCodons((function (x) {
-                        return Bases$Genetics.parse_dna(Bases$Genetics.transcribe, Bases$Genetics.parse_dna(Bases$Genetics.replicate_DNA, x));
+                        return Bases$Genetics.parse(Bases$Genetics.transcribe, Bases$Genetics.parse(Bases$Genetics.replicate_DNA, x));
                       }))
               ]
             ];
@@ -62,12 +62,14 @@ function Input(Props) {
               /* tuple */[
                 "Reverse-transcribed DNA",
                 Bases$Genetics.seq_to_string((function (param) {
-                        return Bases$Genetics.parse_rna(Bases$Genetics.reverse_transcribe, param);
+                        return Bases$Genetics.parse(Bases$Genetics.reverse_transcribe, param);
                       }), seq)
               ],
               /* tuple */[
                 "Codons",
-                getCodons(Bases$Genetics.to_rna)
+                getCodons((function (x) {
+                        return x;
+                      }))
               ]
             ];
     }

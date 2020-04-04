@@ -18,7 +18,6 @@ let make = () => {
       |> Js.String.toUpperCase
       |> Js.String.split("")
       |> Array.map(to_base)
-      |> Array.map(NucleicAcid.filter(baseType));
     setSeq(_ => value);
   };
 
@@ -32,20 +31,20 @@ let make = () => {
   let displayPane = baseType =>
     switch (baseType) {
     | DNA => [|
-        ("Transcribed RNA", parse_dna(transcribe)->seq_to_string(seq)),
-        ("Replicated DNA", parse_dna(replicate_DNA)->seq_to_string(seq)),
+        ("Transcribed RNA", parse(transcribe)->seq_to_string(seq)),
+        ("Replicated DNA", parse(replicate_DNA)->seq_to_string(seq)),
         (
           "Codons",
-          (x => parse_dna(replicate_DNA, x) |> parse_dna(transcribe))
+          (x => parse(replicate_DNA, x) |> parse(transcribe))
           |> getCodons,
         ),
       |]
     | RNA => [|
         (
           "Reverse-transcribed DNA",
-          parse_rna(reverse_transcribe)->seq_to_string(seq),
+          parse(reverse_transcribe)->seq_to_string(seq),
         ),
-        ("Codons", to_rna |> getCodons),
+        ("Codons", (x => x) |> getCodons),
       |]
     };
   let renderPanes =

@@ -1,12 +1,6 @@
-open Bases
-
 type nucleic_acid =
 | RNA
 | DNA
-
-let filter = function
-| RNA -> to_rna
-| DNA -> to_dna
 
 let to_string = function
 | RNA -> "rna"
