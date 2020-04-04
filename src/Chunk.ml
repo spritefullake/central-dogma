@@ -34,5 +34,17 @@ let chunk_list size input =
       loop (elem::acc) (drop size list)
   in loop [] input |> List.rev
 
+let chunk_array size input =
+  let length = Array.length input in
+  let bins = length / size + (length mod size) in
+  let result = Array.make_matrix (Array.length input / size) size input.(0) in
+  for i = 0 to bins do
+    if i + size <= Array.length input then
+      result.(i) <- (Array.sub input i size)
+    else
+      result.(i) <- (Array.sub input i (Array.length input))
+  done;
+  result
+
 let make_codons input =
   chunk_list 3 input

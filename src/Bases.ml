@@ -4,6 +4,7 @@ type base = [`A | `T | `U | `G | `C ]
 type rna = [`A | `U | `G | `C ]
 type dna = [`A | `T | `G | `C ]
 
+
 let replicate_DNA  = function
   | `A -> `T
   | `T -> `A
@@ -44,19 +45,34 @@ let to_string = function
   | `G -> "G"
   | `T -> "T"
   
-let parse_dna f letter = 
+let parse_dna f base = 
+  base |> to_dna |. map f
+let parse_rna f base =
+  base |> to_rna |. map f
+
+let rtf = function
+  | Some #dna as b ->
+      let (Some x) = b in
+      let rep = replicate_DNA(x) in 
+      Some(transcribe(rep))
+  | None -> None
+
+let parse_str_dna f letter = 
   letter |> to_base |> to_dna |. map f
-let parse_rna f letter =
+let parse_str_rna f letter =
   letter |> to_base |> to_rna |. map f
 
+let display_bases base =
+  mapWithDefault base "" to_string 
+
 let display_transcription letter = 
-  mapWithDefault (parse_dna transcribe letter) "" to_string  
+  mapWithDefault (parse_str_dna transcribe letter) "" to_string  
 
 let display_reverse_transcription letter =
-  mapWithDefault (parse_rna reverse_transcribe letter) "" to_string  
+  mapWithDefault (parse_str_rna reverse_transcribe letter) "" to_string  
 
 let display_replication letter =
-  mapWithDefault (parse_dna replicate_DNA letter) "" to_string
+  mapWithDefault (parse_str_dna replicate_DNA letter) "" to_string
 
 let process (input : string) : string array =
   let length = String.length input in

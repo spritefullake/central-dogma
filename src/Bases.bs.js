@@ -3,6 +3,7 @@
 var $$String = require("bs-platform/lib/js/string.js");
 var Caml_array = require("bs-platform/lib/js/caml_array.js");
 var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
+var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
 function replicate_DNA(param) {
   if (param >= 71) {
@@ -131,24 +132,55 @@ function to_string(param) {
   }
 }
 
-function parse_dna(f, letter) {
+function parse_dna(f, base) {
+  return Belt_Option.map(to_dna(base), f);
+}
+
+function parse_rna(f, base) {
+  return Belt_Option.map(to_rna(base), f);
+}
+
+function rtf(b) {
+  if (b !== undefined) {
+    if (b !== undefined) {
+      var rep = replicate_DNA(b);
+      return transcribe(rep);
+    } else {
+      throw [
+            Caml_builtin_exceptions.match_failure,
+            /* tuple */[
+              "Bases.ml",
+              55,
+              10
+            ]
+          ];
+    }
+  }
+  
+}
+
+function parse_str_dna(f, letter) {
   return Belt_Option.map(to_dna(to_base(letter)), f);
 }
 
-function parse_rna(f, letter) {
+function parse_str_rna(f, letter) {
   return Belt_Option.map(to_rna(to_base(letter)), f);
 }
 
+function display_bases(base) {
+  return Belt_Option.mapWithDefault(base, "", to_string);
+}
+
 function display_transcription(letter) {
-  return Belt_Option.mapWithDefault(parse_dna(transcribe, letter), "", to_string);
+  return Belt_Option.mapWithDefault(parse_str_dna(transcribe, letter), "", to_string);
 }
 
 function display_reverse_transcription(letter) {
-  return Belt_Option.mapWithDefault(parse_rna(reverse_transcribe, letter), "", to_string);
+  return Belt_Option.mapWithDefault(parse_str_rna(reverse_transcribe, letter), "", to_string);
 }
 
 function display_replication(letter) {
-  return Belt_Option.mapWithDefault(parse_dna(replicate_DNA, letter), "", to_string);
+  return Belt_Option.mapWithDefault(parse_str_dna(replicate_DNA, letter), "", to_string);
 }
 
 function $$process(input) {
@@ -170,6 +202,10 @@ exports.to_rna = to_rna;
 exports.to_string = to_string;
 exports.parse_dna = parse_dna;
 exports.parse_rna = parse_rna;
+exports.rtf = rtf;
+exports.parse_str_dna = parse_str_dna;
+exports.parse_str_rna = parse_str_rna;
+exports.display_bases = display_bases;
 exports.display_transcription = display_transcription;
 exports.display_reverse_transcription = display_reverse_transcription;
 exports.display_replication = display_replication;

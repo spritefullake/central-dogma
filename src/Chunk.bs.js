@@ -1,7 +1,10 @@
 'use strict';
 
 var List = require("bs-platform/lib/js/list.js");
+var $$Array = require("bs-platform/lib/js/array.js");
 var $$String = require("bs-platform/lib/js/string.js");
+var Caml_array = require("bs-platform/lib/js/caml_array.js");
+var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
 
 function chunk(size, input) {
   var loop = function (_acc, _input) {
@@ -85,6 +88,20 @@ function chunk_list(size, input) {
   return List.rev(loop(/* [] */0, input));
 }
 
+function chunk_array(size, input) {
+  var length = input.length;
+  var bins = Caml_int32.div(length, size) + Caml_int32.mod_(length, size) | 0;
+  var result = $$Array.make_matrix(Caml_int32.div(input.length, size), size, Caml_array.caml_array_get(input, 0));
+  for(var i = 0; i <= bins; ++i){
+    if ((i + size | 0) <= input.length) {
+      Caml_array.caml_array_set(result, i, $$Array.sub(input, i, size));
+    } else {
+      Caml_array.caml_array_set(result, i, $$Array.sub(input, i, input.length));
+    }
+  }
+  return result;
+}
+
 function make_codons(input) {
   return chunk_list(3, input);
 }
@@ -93,5 +110,6 @@ exports.chunk = chunk;
 exports.take = take;
 exports.drop = drop;
 exports.chunk_list = chunk_list;
+exports.chunk_array = chunk_array;
 exports.make_codons = make_codons;
 /* No side effect */
