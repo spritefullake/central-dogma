@@ -45,6 +45,3 @@ let chunk_array size input =
       result.(i) <- (Array.sub input i (Array.length input))
   done;
   result
-
-let make_codons input =
-  chunk_list 3 input

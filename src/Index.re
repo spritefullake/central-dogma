@@ -1,2 +1,2 @@
 
-ReactDOMRe.renderToElementWithId(<Input name="Name"/>,"root")
+ReactDOMRe.renderToElementWithId(<Input/>,"root")

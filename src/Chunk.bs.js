@@ -102,14 +102,9 @@ function chunk_array(size, input) {
   return result;
 }
 
-function make_codons(input) {
-  return chunk_list(3, input);
-}
-
 exports.chunk = chunk;
 exports.take = take;
 exports.drop = drop;
 exports.chunk_list = chunk_list;
 exports.chunk_array = chunk_array;
-exports.make_codons = make_codons;
 /* No side effect */

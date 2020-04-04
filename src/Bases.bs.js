@@ -1,9 +1,8 @@
 'use strict';
 
-var $$String = require("bs-platform/lib/js/string.js");
-var Caml_array = require("bs-platform/lib/js/caml_array.js");
+var $$Array = require("bs-platform/lib/js/array.js");
+var Curry = require("bs-platform/lib/js/curry.js");
 var Belt_Option = require("bs-platform/lib/js/belt_Option.js");
-var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
 function replicate_DNA(param) {
   if (param >= 71) {
@@ -140,25 +139,6 @@ function parse_rna(f, base) {
   return Belt_Option.map(to_rna(base), f);
 }
 
-function rtf(b) {
-  if (b !== undefined) {
-    if (b !== undefined) {
-      var rep = replicate_DNA(b);
-      return transcribe(rep);
-    } else {
-      throw [
-            Caml_builtin_exceptions.match_failure,
-            /* tuple */[
-              "Bases.ml",
-              55,
-              10
-            ]
-          ];
-    }
-  }
-  
-}
-
 function parse_str_dna(f, letter) {
   return Belt_Option.map(to_dna(to_base(letter)), f);
 }
@@ -183,13 +163,11 @@ function display_replication(letter) {
   return Belt_Option.mapWithDefault(parse_str_dna(replicate_DNA, letter), "", to_string);
 }
 
-function $$process(input) {
-  var length = input.length;
-  var result = Caml_array.caml_make_vect(length, "");
-  for(var i = 0 ,i_finish = length - 1 | 0; i <= i_finish; ++i){
-    Caml_array.caml_array_set(result, i, $$String.sub(input, i, 1));
-  }
-  return result;
+function seq_to_string(f, seq) {
+  return $$Array.map((function (x) {
+                  var base = Curry._1(f, x);
+                  return Belt_Option.mapWithDefault(base, "", to_string);
+                }), seq).join("");
 }
 
 exports.replicate_DNA = replicate_DNA;
@@ -202,12 +180,11 @@ exports.to_rna = to_rna;
 exports.to_string = to_string;
 exports.parse_dna = parse_dna;
 exports.parse_rna = parse_rna;
-exports.rtf = rtf;
 exports.parse_str_dna = parse_str_dna;
 exports.parse_str_rna = parse_str_rna;
 exports.display_bases = display_bases;
 exports.display_transcription = display_transcription;
 exports.display_reverse_transcription = display_reverse_transcription;
 exports.display_replication = display_replication;
-exports.$$process = $$process;
+exports.seq_to_string = seq_to_string;
 /* No side effect */

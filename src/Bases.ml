@@ -50,13 +50,6 @@ let parse_dna f base =
 let parse_rna f base =
   base |> to_rna |. map f
 
-let rtf = function
-  | Some #dna as b ->
-      let (Some x) = b in
-      let rep = replicate_DNA(x) in 
-      Some(transcribe(rep))
-  | None -> None
-
 let parse_str_dna f letter = 
   letter |> to_base |> to_dna |. map f
 let parse_str_rna f letter =
@@ -74,10 +67,5 @@ let display_reverse_transcription letter =
 let display_replication letter =
   mapWithDefault (parse_str_dna replicate_DNA letter) "" to_string
 
-let process (input : string) : string array =
-  let length = String.length input in
-  let result = Array.make length "" in
-  for i = 0 to length - 1 do
-    result.(i) <- (String.sub input i 1)
-  done;
-  result
+let seq_to_string f seq =
+  seq |> Array.map (fun x -> f x |> display_bases) |> Js.Array.joinWith ""
