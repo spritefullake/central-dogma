@@ -4,7 +4,6 @@ open Belt.Option
 
 let make_codons (input : base option array) : string array = 
     let opt = (fun x -> mapWithDefault x "" Bases.to_string) in
-
     input 
     |> Array.to_list
     |> chunk_list 3

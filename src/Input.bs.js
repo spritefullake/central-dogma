@@ -87,7 +87,7 @@ function Input(Props) {
                 }, "Enter the ", React.createElement(NASelect$Genetics.make, {
                       value: baseType,
                       onChange: updateBaseType
-                    }), " template strand"), React.createElement("br", undefined), React.createElement("input", {
+                    }), " template strand"), React.createElement("input", {
                   id: "dna",
                   placeholder: "Enter the template strand sequence",
                   value: $$Array.map(Bases$Genetics.display_bases, seq).join(""),

@@ -56,7 +56,6 @@ let make = () => {
       <NASelect value=baseType onChange=updateBaseType />
       {" template strand" |> React.string}
     </label>
-    <br />
     <input
       id="dna"
       placeholder="Enter the template strand sequence"
