@@ -9,7 +9,9 @@
     "watch": "webpack --watch",
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w",
-    "server": "moduleserve ./ --port 8000"
+    "dev:server": "moduleserve ./ --port 8000",
+    "dev:serve": "webpack-dev-server --open",
+    "exp:serve": "node server.js"
   },
   "keywords": [
     "BuckleScript"
@@ -20,11 +22,14 @@
     "@glennsl/bs-jest": "^0.5.1",
     "bs-platform": "^7.2.2",
     "css-loader": "^3.4.2",
+    "express": "^4.17.1",
     "html-webpack-plugin": "^4.0.4",
     "moduleserve": "^0.9.0",
     "style-loader": "^1.1.3",
     "webpack": "^4.42.1",
-    "webpack-cli": "^3.3.11"
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-middleware": "^3.7.2",
+    "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
     "reason-react": "^0.7.0"

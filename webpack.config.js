@@ -1,6 +1,6 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
-const outputDir = path.join(__dirname, "build/")
+const outputDir = path.resolve(__dirname, "build/")
 
 const isProd = process.env.NODE_ENV === "production"
 
@@ -10,7 +10,8 @@ module.exports = {
   devtool: "source-map",
   output: {
     path: outputDir,
-    filename: "Index.js"
+    filename: "Index.js",
+    publicPath: '/'
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -22,7 +23,8 @@ module.exports = {
     compress: true,
     contentBase: outputDir,
     port: process.env.PORT || 8000,
-    historyApiFallback: true
+    historyApiFallback: true,
+    watchContentBase: true
   },
   module: {
     rules: [
@@ -30,7 +32,7 @@ module.exports = {
         test: /\.css$/,
         use: ["style-loader", {
           loader: "css-loader",
-          options: { modules: true }
+          options: { modules: false }
         }]
       }
     ]
