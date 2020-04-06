@@ -17,7 +17,7 @@ let make = () => {
       e->ReactEvent.Form.target##value
       |> Js.String.toUpperCase
       |> Js.String.split("")
-      |> Array.map(to_base)
+      |> Array.map(letter => letter |> to_base |> decide_parse(baseType))
     setSeq(_ => value);
   };
 

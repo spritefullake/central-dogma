@@ -27,7 +27,9 @@ function Input(Props) {
   var setSeq = match$1[1];
   var seq = match$1[0];
   var updateSeq = function (e) {
-    var value = $$Array.map(Bases$Genetics.to_base, e.target.value.toUpperCase().split(""));
+    var value = $$Array.map((function (letter) {
+            return NucleicAcid$Genetics.decide_parse(baseType)(Bases$Genetics.to_base(letter));
+          }), e.target.value.toUpperCase().split(""));
     return Curry._1(setSeq, (function (param) {
                   return value;
                 }));
