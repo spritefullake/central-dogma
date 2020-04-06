@@ -17,15 +17,12 @@ let make = () => {
       e->ReactEvent.Form.target##value
       |> Js.String.toUpperCase
       |> Js.String.split("")
-      |> Array.map(letter => letter |> to_base |> decide_parse(baseType))
+      |> Array.map(letter => letter |> to_base |> decide_parse(baseType));
     setSeq(_ => value);
   };
 
   let getCodons = f => {
-    seq
-    |> Array.map(f)
-    |> make_codons
-    |> Js.Array.joinWith("--");
+    seq |> Array.map(f) |> make_codons |> Js.Array.joinWith("--");
   };
 
   let displayPane = baseType =>
@@ -33,10 +30,10 @@ let make = () => {
     | DNA => [|
         ("Transcribed RNA", parse(transcribe)->seq_to_string(seq)),
         ("Replicated DNA", parse(replicate_DNA)->seq_to_string(seq)),
+        ("Codons", parse(transcribe) |> getCodons),
         (
-          "Codons",
-          (x => parse(replicate_DNA, x) |> parse(transcribe))
-          |> getCodons,
+          "Anticodons",
+          (x => x |> parse(transcribe) |> parse(replicate_RNA)) |> getCodons,
         ),
       |]
     | RNA => [|
@@ -45,6 +42,7 @@ let make = () => {
           parse(reverse_transcribe)->seq_to_string(seq),
         ),
         ("Codons", (x => x) |> getCodons),
+        ("Anticodons",  parse(replicate_RNA) |> getCodons)
       |]
     };
   let renderPanes =
