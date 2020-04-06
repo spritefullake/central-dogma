@@ -14,8 +14,8 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "src/index.html",
-      inject: false
+      template: "indexProduction.html",
+      inject: true
     })
   ],
   devServer: {
@@ -28,7 +28,10 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ["style-loader", "css-loader"]
+        use: ["style-loader", {
+          loader: "css-loader",
+          options: { modules: true }
+        }]
       }
     ]
   }
