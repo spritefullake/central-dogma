@@ -1,23 +1,15 @@
-let permutations pairings =
-  let rec loop acc = function
-  | [] -> acc
-  | (first, second)::tail -> 
-    let new_acc = (first, second)::(second,first)::acc in
-    loop new_acc tail
-  in loop [] pairings
-
 let hachimoji_pairings = [
   `B, `S; `Z, `P
 ]
 let dna_pairings = [
   `A, `T; `G, `C;
-] |> permutations
+]
 let rna_pairings = [
   `U, `A; `G, `C;
-] |> permutations
+]
 let transcribe_pairings = [
   `U, `T; `G, `C
-] |> permutations
+]
 
 let make_polymerase_fun pairings = fun base ->
   let none_until_some = (fun acc (first, second) ->
