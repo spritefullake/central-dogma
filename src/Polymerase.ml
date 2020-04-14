@@ -11,7 +11,7 @@ let transcribe_pairings = [
   `U, `T; `G, `C
 ]
 
-let make_polymerase_fun pairings = fun base ->
+let make_polymerase pairings = fun base ->
   let none_until_some = (fun acc (first, second) ->
     match acc with | Some _ as b -> b
     | None ->  
@@ -25,8 +25,8 @@ let make_polymerase_fun pairings = fun base ->
   in List.fold_left none_until_some None pairings
 
 let dna_polymerase base = 
-  make_polymerase_fun dna_pairings base
+  make_polymerase dna_pairings base
 let rna_polymerase base = 
-  make_polymerase_fun rna_pairings base
+  make_polymerase rna_pairings base
 let reverse_transcriptase base =
-  make_polymerase_fun transcribe_pairings base
+  make_polymerase transcribe_pairings base
