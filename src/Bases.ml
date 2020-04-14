@@ -4,19 +4,19 @@ type base = [`A | `T | `U | `G | `C ]
 type rna = [`A | `U | `G | `C ]
 type dna = [`A | `T | `G | `C ]
 
+let complement = function
+  | `A -> `T 
+  | `G -> `C
+  | `C -> `G 
+  | `T -> `A
 
 let replicate_DNA  = function
-  | `A -> Some `T
-  | `T -> Some `A
-  | `C -> Some `G
-  | `G -> Some `C
+  | #dna as base -> Some (complement base)
   | _ -> None
 let replicate_RNA = function
-  | `A -> Some `U
-  | `U -> Some `A
-  | `C -> Some `G
-  | `G -> Some `C
+  | #rna as base -> Some base
   |  _ -> None
+
 let transcribe =  function
   | `A -> Some `U
   | `T -> Some `A
