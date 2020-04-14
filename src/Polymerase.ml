@@ -7,9 +7,23 @@ let dna_pairings = [
 let rna_pairings = [
   `U, `A; `G, `C;
 ]
+(* 
+  Order of pairings matter. Earlier pairings 
+  get higher priority compared to later 
+  pairings due to none_until_some
+*)
 let transcribe_pairings = [
-  `U, `T; `G, `C
+  `U, `A; `A, `T;  `G, `C 
 ]
+
+let walk_assoc base = (fun acc (first, second) ->
+  match acc with | Some _ as b -> b
+  | None -> 
+    if base == first then Some first 
+    else if base == second then Some second
+    else None
+  )
+
 
 let make_polymerase pairings = fun base ->
   let none_until_some = (fun acc (first, second) ->
@@ -27,6 +41,6 @@ let make_polymerase pairings = fun base ->
 let dna_polymerase base = 
   make_polymerase dna_pairings base
 let rna_polymerase base = 
-  make_polymerase rna_pairings base
+  make_polymerase transcribe_pairings base
 let reverse_transcriptase base =
   make_polymerase transcribe_pairings base

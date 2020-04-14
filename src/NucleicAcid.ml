@@ -1,5 +1,3 @@
-open Bases
-
 type nucleic_acid =
 | RNA
 | DNA
@@ -13,13 +11,7 @@ let from_string = function
 | "dna" -> DNA
 | _ -> DNA
 
-let to_rna = function
-  | Some #rna as base -> base
-  | _ -> None
-let to_dna = function
-  | Some #dna as base -> base
-  | _ -> None
-
-let decide_parse = function
-| RNA -> to_rna
-| DNA -> to_dna
+open Polymerase
+let choose base = function
+| DNA -> List.fold_left (walk_assoc base) None dna_pairings
+| RNA -> List.fold_left (walk_assoc base) None rna_pairings
