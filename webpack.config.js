@@ -34,6 +34,10 @@ module.exports = {
           loader: "css-loader",
           options: { modules: false }
         }]
+      },
+      {
+        test: /\.txt$/,
+        use: 'raw-loader'
       }
     ]
   }
