@@ -34,5 +34,17 @@
   },
   "dependencies": {
     "reason-react": "^0.7.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ],
+    "moduleDirectories": [
+      "node_modules"
+    ],
+    "moduleNameMapper": {
+      "\\.(txt)$": "<rootDir>/__mocks__/fileMock.js"
+    }
   }
 }

@@ -10,9 +10,12 @@ let make_codons (input : string array) : string array =
     |> Array.map (fun x -> x |> Array.to_list |> String.concat "")
 
 let match_codons input =
-  Array.map (fun {codon} -> 
-    if input = codon then Some codon else None
-  ) codonsTable
+  Array.fold_left (fun acc {codon; aminoAcid} -> 
+    match acc with 
+    | None ->
+      if input = codon then Some aminoAcid else None
+    | _ -> acc
+  ) None codonsTable
 
 (* 
 let filepath = "CodonsShort.txt"
