@@ -38,6 +38,14 @@ module.exports = {
       {
         test: /\.txt$/,
         use: 'raw-loader'
+      },
+      {
+        test: /\.tsv$/,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
       }
     ]
   }

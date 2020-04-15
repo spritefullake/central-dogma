@@ -41,6 +41,11 @@ for (i in 0 to (matrix |> Array.length) - 1) {
     };
   };
 };
+
+let raw3CodeURI : string = [%raw {| require("../Codons.tsv").default |}];
+
+
+
 open Bases;
 let codonsTable =
   Array.map(
