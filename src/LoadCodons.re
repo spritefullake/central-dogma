@@ -42,11 +42,29 @@ for (i in 0 to (matrix |> Array.length) - 1) {
   };
 };
 
-let raw3CodeURI : string = [%raw {| require("../Codons.tsv").default |}];
+let formatRaw3Code = text => text 
+  |> Js.String.split("\n")
+  |> Array.map (x => 
+    Js.String.split("    ",x) 
+    |> Array.map (x => Js.String.split(" ",x)
+      //Remove empty entries
+      |> Js.Array.filter (x => x != "")))
+  //Remove empty arrays
+  |> Js.Array.filter (x => x != [| [||] |])
+  //Finally flatten the Arrays
+  |> Array.fold_left((acc, x) => Array.append(x,acc),[||])
 
+let raw3CodeURI: string = [%raw {| require("../Codons.tsv").default |}];
+Js.Promise.(
+  Fetch.fetch(raw3CodeURI)
+  |> then_(Fetch.Response.text)
+  |> then_(text => text 
+    |> formatRaw3Code 
+    |> Js.log
+    |> resolve
+  )
+);
 
-
-open Bases;
 let codonsTable =
   Array.map(
     row => {
