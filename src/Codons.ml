@@ -11,10 +11,10 @@ let make_codons input =
     |> Array.to_list
     |> chunk_list 3
 let match_codon input =
-  Array.fold_left (fun acc {codon; aminoAcid} -> 
+  Array.fold_left (fun acc {codon; code1} -> 
     match acc with 
     | None ->
-      if input = codon then Some aminoAcid else None
+      if input = codon then Some code1 else None
     | _ -> acc
   ) None codonsTable
 let match_codons input = 

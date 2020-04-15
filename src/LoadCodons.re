@@ -3,7 +3,8 @@ type effect =
   | Stop
   | Nothing;
 type table('a) = {
-  aminoAcid: string,
+  code1: string,
+  code3: string,
   does: effect,
   codon: list('a),
 };
@@ -42,37 +43,58 @@ for (i in 0 to (matrix |> Array.length) - 1) {
   };
 };
 
-let formatRaw3Code = text => text 
+let formatRaw3Code = text =>
+  text
   |> Js.String.split("\n")
-  |> Array.map (x => 
-    Js.String.split("    ",x) 
-    |> Array.map (x => Js.String.split(" ",x)
-      //Remove empty entries
-      |> Js.Array.filter (x => x != "")))
+  |> Array.map(x =>
+       Js.String.split("    ", x)
+       |> Array.map(x =>
+            Js.String.split(" ", x)
+            //Remove empty entries
+            |> Js.Array.filter(x => x != "")
+          )
+     )
   //Remove empty arrays
-  |> Js.Array.filter (x => x != [| [||] |])
+  |> Js.Array.filter(x => x != [|[||]|])
   //Finally flatten the Arrays
-  |> Array.fold_left((acc, x) => Array.append(x,acc),[||])
+  |> Array.fold_left((acc, x) => Array.append(x, acc), [||]);
+
+let parseRow = row =>
+  if (Array.length(row) > 3) {
+    row[3] |> string_to_effect;
+  } else {
+    Nothing;
+  };
+
+let parse3CodeToTable = text =>
+  text
+  |> Array.map(row => {
+       {
+         code1: row[1],
+         code3: row[2],
+         does: parseRow(row),
+         codon: row[0] |> Js.String.replace("T","U") |> Js.String.split("") |> Array.to_list,
+       }
+     });
+let processRaw3Code = text => text |> formatRaw3Code |> parse3CodeToTable;
 
 let raw3CodeURI: string = [%raw {| require("../Codons.tsv").default |}];
 Js.Promise.(
   Fetch.fetch(raw3CodeURI)
   |> then_(Fetch.Response.text)
-  |> then_(text => text 
-    |> formatRaw3Code 
-    |> Js.log
-    |> resolve
-  )
+  |> then_(text => processRaw3Code(text) |> Js.log |> resolve)
 );
 
 let codonsTable =
   Array.map(
     row => {
       {
-        aminoAcid: row[0],
+        code1: row[0],
+        code3: "",
         does: row[1] |> string_to_effect,
         codon: [row[2], row[3], row[4]],
       }
     },
     new_matrix,
   );
+
