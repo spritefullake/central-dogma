@@ -31,7 +31,7 @@ for (i in 0 to (matrix |> Array.length) - 1) {
   for (j in 0 to (row |> Array.length) - 1) {
     let entry = matrix[i][j];
     /* Replace Thymine with Uracil because
-     * RNA codons are less confusing 
+     * RNA codons are less confusing
      * than DNA codons
      */
     if (i >= 2 && entry == "T") {

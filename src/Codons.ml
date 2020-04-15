@@ -1,22 +1,31 @@
 open Chunk
 open LoadCodons
 
-let make_codons (input : string array) : string array = 
-    input
-    |> Array.to_list
-    |> chunk_list 3
+let display_codons input = 
+    input 
     |> Array.of_list
     |> Array.map(Array.of_list)
     |> Array.map (fun x -> x |> Array.to_list |> String.concat "")
-
-let match_codons input =
+let make_codons input = 
+    input
+    |> Array.to_list
+    |> chunk_list 3
+let match_codon input =
   Array.fold_left (fun acc {codon; aminoAcid} -> 
     match acc with 
     | None ->
       if input = codon then Some aminoAcid else None
     | _ -> acc
   ) None codonsTable
-
+let match_codons input = 
+  input 
+  |> make_codons
+  |> List.map match_codon
+let display_matches input =
+  List.map (function 
+    | Some codon -> codon
+    | None -> "") input
+  |> Array.of_list
 (* 
 let filepath = "CodonsShort.txt"
 let in_channel = open_in filepath
