@@ -53,4 +53,3 @@ let codonsTable =
     },
     new_matrix,
   );
-Js.log2("The newmat is",new_matrix)
