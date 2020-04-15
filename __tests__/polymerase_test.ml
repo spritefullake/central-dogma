@@ -3,7 +3,7 @@ open Expect
 open Polymerase
 
 let () =
-describe "Chunking" (fun () ->
+describe "Polymerase" (fun () ->
 
     test "Reverse transcription" (fun () -> 
         let strand = [| `A; `U; `G; `C |] in 
