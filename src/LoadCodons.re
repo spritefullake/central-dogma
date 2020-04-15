@@ -34,7 +34,7 @@ for (i in 0 to (matrix |> Array.length) - 1) {
      * RNA codons are less confusing 
      * than DNA codons
      */
-    if (j >= 2 && entry == "T") {
+    if (i >= 2 && entry == "T") {
       new_matrix[j][i] = "U";
     } else {
       new_matrix[j][i] = entry;
@@ -53,3 +53,4 @@ let codonsTable =
     },
     new_matrix,
   );
+Js.log2("The newmat is",new_matrix)
