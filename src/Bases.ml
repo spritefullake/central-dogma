@@ -1,6 +1,3 @@
-type base = [`A | `T | `U | `G | `C ]
-type rna = [`A | `U | `G | `C ]
-type dna = [`A | `T | `G | `C ]
 let to_base = function
   | "A" -> Some `A
   | "U" -> Some `U
