@@ -44,7 +44,7 @@ let displayPane = (~strand, ~source, ~backbone) => {
       ),
       (
         "Amino Acids (Three Letter Code)",
-        process(rna_polymerase) |> toAACode(~source, ~code=`Three),
+        strand_to_string(strand) |> toAACode(~source, ~code=`Three),
       ),
     |]
   };
