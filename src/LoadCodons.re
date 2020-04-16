@@ -81,14 +81,14 @@ let processRaw3Code = text => text |> formatRaw3Code |> parse3CodeToTable;
 
 let raw3CodeURI: string = [%raw {| require("../Codons.tsv").default |}];
 let codonsTable = ref([| |]);
-Js.Promise.(
+
+open Js.Promise
+let load = () =>
   Fetch.fetch(raw3CodeURI)
   |> then_(Fetch.Response.text)
   |> then_(text => {
-    codonsTable := processRaw3Code(text); 
-    codonsTable^ |> Js.log |> resolve
+    processRaw3Code(text) |> resolve
   })
-);
 
 
 let codonsTable =

@@ -2,8 +2,19 @@ open Codons;
 open NucleicAcid;
 open Polymerase;
 open Bases;
+type tableType = array(LoadCodons.table(string));
 [@react.component]
 let make = (~strand, ~baseType) => {
+  
+  let (codonSource, setCodonSource) = React.useState(() => ([||] :> tableType));
+
+  React.useEffect0(() => {
+    open Js.Promise;
+    LoadCodons.load() |> 
+    then_(res => setCodonSource(_ => res) |> resolve) |> ignore;
+    None;
+  });
+  
   let toCodons = input => 
     input
     |> Js.String.split("")
