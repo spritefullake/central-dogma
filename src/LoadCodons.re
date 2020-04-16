@@ -11,6 +11,7 @@ type table('a) = {
 let string_to_effect = e =>
   switch (e) {
   | "M" => Start
+  | "i" => Start
   | "*" => Stop
   | _ => Nothing
   };
@@ -63,7 +64,7 @@ let parseRow = row =>
   if (Array.length(row) > 3) {
     row[3] |> string_to_effect;
   } else {
-    Nothing;
+    row[1] |> string_to_effect;
   };
 
 let parse3CodeToTable = text =>
@@ -79,11 +80,16 @@ let parse3CodeToTable = text =>
 let processRaw3Code = text => text |> formatRaw3Code |> parse3CodeToTable;
 
 let raw3CodeURI: string = [%raw {| require("../Codons.tsv").default |}];
+let codonsTable = ref([| |]);
 Js.Promise.(
   Fetch.fetch(raw3CodeURI)
   |> then_(Fetch.Response.text)
-  |> then_(text => processRaw3Code(text) |> Js.log |> resolve)
+  |> then_(text => {
+    codonsTable := processRaw3Code(text); 
+    codonsTable^ |> Js.log |> resolve
+  })
 );
+
 
 let codonsTable =
   Array.map(
