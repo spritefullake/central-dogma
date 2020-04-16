@@ -11,7 +11,7 @@ let make = (~strand, ~baseType) => {
   React.useEffect0(() => {
     open Js.Promise;
     LoadCodons.load() |> 
-    then_(res => setCodonSource(_ => res) |> resolve) |> ignore;
+    then_(res => setCodonSource(_ => res) |> Js.log2(res) |> resolve) |> ignore;
     None;
   });
   
@@ -25,7 +25,7 @@ let make = (~strand, ~baseType) => {
   let toAminoAcids = input =>
     input
     |> Js.String.split("")
-    |> match_codons
+    |. match_codons(codonSource)
     |> display_matches
     |> Js.Array.joinWith("--");
   let process = strand |> parse_then_string;
