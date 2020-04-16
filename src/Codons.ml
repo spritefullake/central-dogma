@@ -1,6 +1,19 @@
 open Chunk
-open LoadCodons
-
+type effect =
+  | Start
+  | Stop
+  | Nothing
+type 'a t = {
+  code1: string;
+  code3: string;
+  does: effect;
+  codon: 'a list;}
+let string_to_effect = function
+| "M" -> Start
+| "i" -> Start
+| "*" -> Stop
+| _ -> Nothing
+type table = string t array
 let display_codons input = 
     input 
     |> Array.of_list

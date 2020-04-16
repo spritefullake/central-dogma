@@ -1,20 +1,4 @@
-type effect =
-  | Start
-  | Stop
-  | Nothing;
-type table('a) = {
-  code1: string,
-  code3: string,
-  does: effect,
-  codon: list('a),
-};
-let string_to_effect = e =>
-  switch (e) {
-  | "M" => Start
-  | "i" => Start
-  | "*" => Stop
-  | _ => Nothing
-  };
+open Codons;
 let formatRaw3Code = text =>
   text
   |> Js.String.split("\n")
