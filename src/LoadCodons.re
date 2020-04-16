@@ -74,22 +74,23 @@ let parse3CodeToTable = text =>
          code1: row[1],
          code3: row[2],
          does: parseRow(row),
-         codon: row[0] |> Js.String.replace("T","U") |> Js.String.split("") |> Array.to_list,
+         codon:
+           row[0]
+           |> Js.String.replaceByRe([%re "/\\T/g"], "U")
+           |> Js.String.split("")
+           |> Array.to_list,
        }
      });
 let processRaw3Code = text => text |> formatRaw3Code |> parse3CodeToTable;
 
 let raw3CodeURI: string = [%raw {| require("../Codons.tsv").default |}];
-let codonsTable = ref([| |]);
+let codonsTable = ref([||]);
 
-open Js.Promise
+open Js.Promise;
 let load = () =>
   Fetch.fetch(raw3CodeURI)
   |> then_(Fetch.Response.text)
-  |> then_(text => {
-    processRaw3Code(text) |> resolve
-  })
-
+  |> then_(text => {processRaw3Code(text) |> resolve});
 
 let codonsTable =
   Array.map(
@@ -103,4 +104,3 @@ let codonsTable =
     },
     new_matrix,
   );
-
