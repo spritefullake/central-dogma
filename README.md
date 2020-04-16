@@ -1,24 +1,20 @@
-# Basic Reason Template
+# Central Dogma of Biology
+##### Input genetic codes and obtain the results of various genetic processes!
 
-Hello! This project allows you to quickly get started with Reason and BuckleScript. If you wanted a more sophisticated version, try the `react` template (`bsb -theme react -init .`).
+### Features
+* Exhibits DNA replication, RNA replication, transcription, reverse transcription and translation. 
+* Displays codons and anticodons
 
-# Build
+***
+*DNA → RNA → Protein*
 
-```bash
-# for yarn
-yarn build
+This ↑ is the central dogma of biology: DNA codes for RNA which codes for protein...
 
-# for npm
-npm run build
-```
+Actually, it's not that simple. For example, introns in DNA are spiced out from pre-mRNA; only the **ex**ons get **ex**ported to mRNA. And not all RNA codes for protein; consider tRNAs, snRNAs and microRNAs. Still the general concept of genetic codes reflects the wonder of life: small, limited sets of molecules can carry all the information required for creating an organism. 
 
-# Build + Watch
+Hopefully this software program gives an insight into the genetic program behind living things.
 
-```bash
-# for yarn
-yarn start
+Codon data from [ncbi genetic codes](https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi?chapter=tgencodes#SG1)
 
-# for npm
-npm run start
-```
 
+Made with ♥️, ReasonML and OCaml.
