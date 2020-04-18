@@ -1,7 +1,6 @@
 open NucleicAcid;
 [@react.component]
-let make = (~value: nucleic_acid, ~onChange) => {
-    
+let make = (~value, ~onChange) => {
     <select id="nucleic-acid-type" 
     onChange
     value={value |> to_string}>

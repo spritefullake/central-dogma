@@ -1,4 +1,4 @@
-type nucleic_acid =
+type t =
 | RNA
 | DNA
 
