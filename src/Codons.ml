@@ -4,8 +4,8 @@ type effect =
   | Stop
   | Nothing
 type 'a t = {
-  code1: string;
-  code3: string;
+  code1: 'a;
+  code3: 'a;
   does: effect;
   codon: 'a list;}
 let string_to_effect = function
