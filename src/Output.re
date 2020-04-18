@@ -1,7 +1,6 @@
-open Codons;
 [@react.component]
 let make = (~strand, ~baseType) => {
-  let (codonSource, setCodonSource) = React.useState(() => ([||] :> table));
+  let (codonSource, setCodonSource) = React.useState(() => ([||] :> Codons.table));
 
   React.useEffect0(() => {
     open Js.Promise;

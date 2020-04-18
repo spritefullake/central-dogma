@@ -1,2 +1,2 @@
 [%raw {|require('../index.css')|}]
-ReactDOMRe.renderToElementWithId(<Input/>,"root")
+ReactDOMRe.renderToElementWithId(<Dashboard/>,"root")
