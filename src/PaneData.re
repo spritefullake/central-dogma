@@ -4,11 +4,12 @@ open Bases;
 let toCodons = input =>
   input
   |> Js.String.split("")
+  |> Array.to_list
   |> make_codons
   |> display_codons
   |> Js.Array.joinWith("--");
 let toAACode = (~code, ~source, input) => {
-  let modified = input |> Js.String.split("");
+  let modified = input |> Js.String.split("") |> Array.to_list;
   match_codons(~input=modified, ~source, ~letter_code=code)
   |> display_matches
   |> Js.Array.joinWith("--");
