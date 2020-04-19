@@ -12,15 +12,13 @@ let loadMock = (fun () ->
 let () =
 
 describe "Matching codons with Amino Acids" (fun () ->
-
+    let table = loadMock() in
     test "Start codon is AUG -> Methionine" (fun () -> 
-        let table = loadMock() in
         let matched = match_codon `Three ["A";"U";"G"] table in
         expect matched |> toEqual (Some "Met")
     );
-    (*
-    test "UUU is Phenylalanine" (fun () -> 
-        let result = ["U";"U";"U"] |> match_codon in
-        expect result |> toEqual (Some "F")
-    );*)
+    test "UUU is Phenylalanine for one-letter code, F" (fun () -> 
+        let matched =  match_codon `One ["U";"U";"U"] table in
+        expect matched |> toEqual (Some "F")
+    );
 );
