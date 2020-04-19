@@ -24,7 +24,6 @@ let walk_assoc base = (fun acc (first, second) ->
     else None
   )
 
-
 let make_polymerase pairings = fun base ->
   let none_until_some = (fun acc (first, second) ->
     match acc with | Some _ as b -> b
@@ -40,9 +39,10 @@ let make_polymerase pairings = fun base ->
 
 let dna_polymerase base = 
   make_polymerase dna_pairings base
+
 let rna_polymerase base = 
   make_polymerase transcribe_pairings base
+  
 let reverse_transcriptase base =
   (* Reverse inverts the priority so A -> T instead of A -> U*)
   make_polymerase (List.rev transcribe_pairings) base
-

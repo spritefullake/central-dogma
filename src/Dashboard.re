@@ -1,6 +1,5 @@
 open Bases;
 open NucleicAcid;
-
 [@react.component]
 let make = () => {
   let (baseType, setBaseType) = React.useState(() => DNA);
@@ -25,7 +24,6 @@ let make = () => {
       <NASelect value=baseType onChange=updateBaseType />
       {" template strand" |> React.string}
     </Input>
-    
     <Output strand baseType />
   </>;
 };
