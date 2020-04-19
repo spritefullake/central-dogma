@@ -13,5 +13,5 @@ let make = (~strand, ~baseType) => {
     displayPane(~strand, ~backbone=baseType, ~source=codonSource)
     |> Array.map(((title, data)) => <Pane key=title title data />);
 
-  <div> {renderPanes |> React.array} </div>;
+  <div id="output"> {renderPanes |> React.array} </div>;
 };
