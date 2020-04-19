@@ -46,7 +46,7 @@
       "node_modules"
     ],
     "moduleNameMapper": {
-      "\\.(txt)$": "<rootDir>/__mocks__/fileMock.js"
+      "\\.(tsv|.txt)$": "<rootDir>/__mocks__/fileMock.js"
     }
   }
 }
