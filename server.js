@@ -14,5 +14,5 @@ app.use(webpackDevMiddleware(compiler, {
 
 let {port} = config.devServer;
 app.listen(port, function () {
-  console.log(`Listening on port ${port}\nGo to localhost:${port}`);
+  console.log(`Listening on port ${port}\nGo to http://localhost:${port}`);
 });
