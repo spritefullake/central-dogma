@@ -18,7 +18,7 @@
     "in-source": true
   },
   "suffix": ".bs.js",
-  "bs-dependencies": ["reason-react", "bs-fetch"],
+  "bs-dependencies": ["reason-react", "bs-fetch", "bs-css","bs-css-dom"],
   "bs-dev-dependencies": [
     "@glennsl/bs-jest"
   ],

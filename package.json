@@ -34,6 +34,7 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "bs-css-dom": "^1.2.0",
     "bs-fetch": "^0.5.2",
     "reason-react": "^0.7.0"
   },
