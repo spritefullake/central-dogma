@@ -21,12 +21,12 @@ type t = {
 };
 let t_of_tuple = ((title, data, colorOn)) => {title, data, colorOn};
 open Polymerase;
-let displayPane = (~strand, ~source, ~backbone) => {
+let displayPane = (~strand, ~source, ~backbone, ~colorBases) => {
   let process = strand |> parse_then_string;
   let dnaPane = [|
-    ("Transcribed RNA", process(rna_polymerase), true),
-    ("Replicated DNA", process(dna_polymerase), true),
-    ("Codons", process(rna_polymerase) |> toCodons, true),
+    ("Transcribed RNA", process(rna_polymerase), colorBases),
+    ("Replicated DNA", process(dna_polymerase), colorBases),
+    ("Codons", process(rna_polymerase) |> toCodons, colorBases),
     (
       "Anticodons",
       process(x => x |> rna_polymerase >>= reverse_transcriptase) |> toCodons,
@@ -44,9 +44,9 @@ let displayPane = (~strand, ~source, ~backbone) => {
     ),
   |];
   let rnaPane = [|
-    ("Reverse-transcribed DNA", process(reverse_transcriptase), true),
-    ("Codons", strand_to_string(strand) |> toCodons, true),
-    ("Anticodons", process(rna_polymerase) |> toCodons, true),
+    ("Reverse-transcribed DNA", process(reverse_transcriptase), colorBases),
+    ("Codons", strand_to_string(strand) |> toCodons, colorBases),
+    ("Anticodons", process(rna_polymerase) |> toCodons, colorBases),
     (
       "Amino Acids (One Letter Code)",
       strand_to_string(strand) |> toAACode(~source, ~code=`One),

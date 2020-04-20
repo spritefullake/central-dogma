@@ -18,12 +18,25 @@ let make = () => {
       |> Array.map(letter => letter |> to_base >>= filterBaseType);
     setStrand(_ => value);
   };
+  let (colorBases, setColorBases) = React.useState(() => true);
+  let toggleColorBases = _ => setColorBases(oldValue => !oldValue);
+
   <>
     <Input strand onChange=updateStrand>
       {"Enter the " |> React.string}
       <NASelect value=baseType onChange=updateBaseType />
       {" template strand" |> React.string}
+      <br/>
+      <label htmlFor="color-toggle">
+        {"Color bases:" |> React.string}
+      </label>
+      <input
+        id="color-toggle"
+        type_="checkbox"
+        checked=colorBases
+        onChange=toggleColorBases
+      />
     </Input>
-    <Output strand baseType />
+    <Output strand baseType colorBases />
   </>;
 };
