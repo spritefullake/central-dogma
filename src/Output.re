@@ -11,7 +11,7 @@ let make = (~strand, ~baseType) => {
   open PaneData;
   let renderPanes =
     displayPane(~strand, ~backbone=baseType, ~source=codonSource)
-    |> Array.map(((title, data)) => <Pane key=title title data />);
+    |> Array.map(({title, data, colorOn}) => <Pane key=title title data colorOn />);
 
   <div id="output"> {renderPanes |> React.array} </div>;
 };

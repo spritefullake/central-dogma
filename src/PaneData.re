@@ -14,39 +14,52 @@ let toAACode = (~code, ~source, input) => {
   |> display_matches
   |> Js.Array.joinWith("--");
 };
+type t = {
+  title: string,
+  data: string,
+  colorOn: bool,
+};
+let t_of_tuple = ((title, data, colorOn)) => {title, data, colorOn};
 open Polymerase;
 let displayPane = (~strand, ~source, ~backbone) => {
   let process = strand |> parse_then_string;
+  let dnaPane = [|
+    ("Transcribed RNA", process(rna_polymerase), true),
+    ("Replicated DNA", process(dna_polymerase), true),
+    ("Codons", process(rna_polymerase) |> toCodons, true),
+    (
+      "Anticodons",
+      process(x => x |> rna_polymerase >>= reverse_transcriptase) |> toCodons,
+      true,
+    ),
+    (
+      "Amino Acids (One Letter Code)",
+      process(rna_polymerase) |> toAACode(~source, ~code=`One),
+      false,
+    ),
+    (
+      "Amino Acids (Three Letter Code)",
+      process(rna_polymerase) |> toAACode(~source, ~code=`Three),
+      false,
+    ),
+  |];
+  let rnaPane = [|
+    ("Reverse-transcribed DNA", process(reverse_transcriptase), true),
+    ("Codons", strand_to_string(strand) |> toCodons, true),
+    ("Anticodons", process(rna_polymerase) |> toCodons, true),
+    (
+      "Amino Acids (One Letter Code)",
+      strand_to_string(strand) |> toAACode(~source, ~code=`One),
+      false,
+    ),
+    (
+      "Amino Acids (Three Letter Code)",
+      strand_to_string(strand) |> toAACode(~source, ~code=`Three),
+      false,
+    ),
+  |];
   switch (backbone) {
-  | DNA => [|
-      ("Transcribed RNA", process(rna_polymerase)),
-      ("Replicated DNA", process(dna_polymerase)),
-      ("Codons", process(rna_polymerase) |> toCodons),
-      (
-        "Anticodons",
-        process(x => x |> rna_polymerase >>= reverse_transcriptase) |> toCodons,
-      ),
-      (
-        "Amino Acids (One Letter Code)",
-        process(rna_polymerase) |> toAACode(~source, ~code=`One),
-      ),
-      (
-        "Amino Acids (Three Letter Code)",
-        process(rna_polymerase) |> toAACode(~source, ~code=`Three),
-      ),
-    |]
-  | RNA => [|
-      ("Reverse-transcribed DNA", process(reverse_transcriptase)),
-      ("Codons", strand_to_string(strand) |> toCodons),
-      ("Anticodons", process(rna_polymerase) |> toCodons),
-      (
-        "Amino Acids (One Letter Code)",
-        strand_to_string(strand) |> toAACode(~source, ~code=`One),
-      ),
-      (
-        "Amino Acids (Three Letter Code)",
-        strand_to_string(strand) |> toAACode(~source, ~code=`Three),
-      ),
-    |]
+  | DNA => dnaPane |> Array.map(t_of_tuple)
+  | RNA => rnaPane |> Array.map(t_of_tuple)
   };
 };
