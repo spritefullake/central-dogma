@@ -30,7 +30,7 @@ let displayPane = (~strand, ~source, ~backbone, ~colorBases) => {
     (
       "Anticodons",
       process(x => x |> rna_polymerase >>= reverse_transcriptase) |> toCodons,
-      true,
+      colorBases,
     ),
     (
       "Amino Acids (One Letter Code)",
