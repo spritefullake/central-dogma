@@ -48,12 +48,56 @@ let reverse_transcriptase base =
   (* Reverse inverts the priority so A -> T instead of A -> U*)
   make_polymerase (List.rev transcribe_pairings) base
 
-type bases = [ `A | `T | `G | `C | `U ]
-
 type _ nucleic_acid =
 | D : [`A | `T | `G | `C] -> [`A | `T | `G | `C] nucleic_acid
 | R : [`A | `U | `G | `C] -> [`A | `U | `G | `C] nucleic_acid
 | None
+
+type bases = [ `A | `T | `G | `C | `U ]
+type dna_bases = [ `A | `T | `G | `C ]
+type rna_bases = [ `A | `U | `G | `C ]
+type _ genetic_action = 
+| BaseR: rna_bases -> rna_bases genetic_action
+| BaseD: dna_bases -> dna_bases genetic_action
+| Replicate:  'a genetic_action -> 'a genetic_action 
+| Transcribe: dna_bases genetic_action -> rna_bases genetic_action 
+| ReverseTranscribe: rna_bases genetic_action -> dna_bases genetic_action
+
+let forward_transcribe = function
+| `A -> `U 
+| `G -> `C 
+| `T -> `A 
+| `C -> `G
+let replicateR = function 
+| `A -> `U 
+| `G -> `C 
+| `U -> `A 
+| `C -> `G
+let replicateD = function 
+| `A -> `T 
+| `G -> `C 
+| `T -> `A 
+| `C -> `G
+let reverse_transcribe = function 
+| `A -> `T 
+| `G -> `C 
+| `U -> `A 
+| `C -> `G
+let replicate : type a . a genetic_action -> a genetic_action = function
+| BaseR b -> BaseR (replicateR b)
+| BaseD b -> BaseD (replicateD b) 
+| _ as a -> a
+let transcribeF = function
+| BaseD b -> BaseR (forward_transcribe b)
+
+let transcribeR = function
+| BaseR b -> BaseD (reverse_transcribe b)
+
+let rec interpret: type a . a genetic_action -> a genetic_action = function
+| BaseR _ as a -> a | BaseD _  as a -> a
+| Replicate action -> replicate (interpret action)
+| Transcribe action -> transcribeF (interpret action)
+| ReverseTranscribe action -> transcribeR (interpret action)
 
 module type System = sig
   type t 
