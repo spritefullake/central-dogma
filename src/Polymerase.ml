@@ -49,27 +49,45 @@ let reverse_transcriptase base =
   make_polymerase (List.rev transcribe_pairings) base
 
 type bases = [ `A | `T | `G | `C | `U ]
-type dna_bases = [ `A | `T | `G | `C ]
-type rna_bases = [ `A | `U | `G | `C ]
 
-type 'a strand = 'a array
-type _ ghost = 
-| D: dna_bases strand -> _ ghost 
-| R: rna_bases strand -> _ ghost 
+module type System = sig 
+  type dna_bases = [ `A | `T | `G | `C ] 
+  type rna_bases = [ `A | `U | `G | `C ]
+  val complementD: [< dna_bases | rna_bases] -> [> dna_bases]
+  val complementR: [< dna_bases | rna_bases] -> [> rna_bases]
+end 
 
-let complementD = function 
-| `A -> `T | `T -> `A 
-| `G -> `C | `C -> `G 
-| `U -> `A 
-let complementR = function 
-| `A -> `U | `U -> `A 
-| `G -> `C | `C -> `G 
-| `T -> `A 
+module type Mappable = sig 
+  type 'a t 
+  val map: ('a -> 'b) -> 'a t -> 'b t
+end
 
-let replicate = function
-| D strand -> D (Array.map complementD strand) 
-| R strand -> R (Array.map complementR strand) 
+module Standard : System = struct 
+  type dna_bases = [`A | `T | `G | `C] 
+  type rna_bases = [`A | `U | `G | `C]
+  let complementD = function 
+  | `A -> `T | `T -> `A 
+  | `G -> `C | `C -> `G 
+  | `U -> `A 
+  let complementR = function 
+  | `A -> `U | `U -> `A 
+  | `G -> `C | `C -> `G 
+  | `T -> `A 
+end 
 
-let transcribe = function 
-| D strand -> R (Array.map complementR strand)
-| R strand -> D (Array.map complementD strand)
+module MakeSystem (M : Mappable) (S : System) = struct 
+  include S
+  type 'a strand = 'a M.t
+  let map = M.map
+  type backbone = D of dna_bases strand | R of rna_bases strand
+
+  let replicate = function
+  | D strand -> D (map complementD strand) 
+  | R strand -> R (map complementR strand) 
+
+  let transcribe = function 
+  | D strand -> R (map complementR strand)
+  | R strand -> D (map complementD strand)
+end
+
+module StandardSystem = MakeSystem(struct include Array type 'a t = 'a array end)(Standard)
