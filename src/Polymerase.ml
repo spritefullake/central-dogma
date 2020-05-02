@@ -50,34 +50,44 @@ let reverse_transcriptase base =
 
 type bases = [ `A | `T | `G | `C | `U ]
 
-module type System = sig 
-  type dna_bases = [ `A | `T | `G | `C ] 
-  type rna_bases = [ `A | `U | `G | `C ]
-  val complementD: [< dna_bases | rna_bases] -> [> dna_bases]
-  val complementR: [< dna_bases | rna_bases] -> [> rna_bases]
-end 
+open Enzyme
+(* Monads are building blocks, functors act top down 
+compare filtering (functor) to monadic operations
+*)
+module ExtendSystem (M : Mappable) (S : System) = struct
+  include S 
+  include M
+  
+  type backbone = D of dna_bases | R of rna_bases
+  type 'a strand = 'a option t
 
-module type Mappable = sig 
-  type 'a t 
-  val map: ('a -> 'b) -> 'a t -> 'b t
+  let replicate' = function
+  | D base -> D (complementD base)
+  | R base -> R (complementR base)
+  let transcribe' = function
+  | D base -> R (complementR base)
+  | R base -> D (complementD base)
+  let glycosylateD = function
+  | #dna_bases as b -> Some (D b)
+  | _ -> None
+  let glycosylateR = function 
+  | #rna_bases as b -> Some (R b) 
+  | _ -> None
+  
+  let lift f x = Some (f x) 
+  let (>>=) x f = match x with Some x -> f x | _ -> None
+  let flat_map f x = x >>= f
+
+  let ligateD bases = map (flat_map glycosylateD) bases
+  let ligateR bases = map (flat_map glycosylateR) bases
+  
+  let replicate = map (flat_map (lift replicate'))
+  let transcribe = map (flat_map (lift transcribe'))
 end
-
-module Standard : System = struct 
-  type dna_bases = [`A | `T | `G | `C] 
-  type rna_bases = [`A | `U | `G | `C]
-  let complementD = function 
-  | `A -> `T | `T -> `A 
-  | `G -> `C | `C -> `G 
-  | `U -> `A 
-  let complementR = function 
-  | `A -> `U | `U -> `A 
-  | `G -> `C | `C -> `G 
-  | `T -> `A 
-end 
-
 module MakeSystem (M : Mappable) (S : System) = struct 
   include S
-  type 'a strand = 'a M.t
+  type 'a t = 'a M.t
+  type 'a strand = 'a t
   let map = M.map
   type backbone = D of dna_bases strand | R of rna_bases strand
 
@@ -88,6 +98,21 @@ module MakeSystem (M : Mappable) (S : System) = struct
   let transcribe = function 
   | D strand -> R (map complementR strand)
   | R strand -> D (map complementD strand)
+
+  let toDStrand strand = 
+    filter (function | #dna_bases -> true | _ -> false) strand
+  let toRStrand strand = 
+    filter (function | #rna_bases -> true | _ -> false) strand
+  (* Monadic strand conversion functions *)
+  let tryDStrand strand =
+    map (function | #dna_bases as b -> Some b | _ -> None) strand
+  let tryRStrand strand =
+    map (function | #rna_bases as b -> Some b | _ -> None) strand
 end
 
-module StandardSystem = MakeSystem(struct include Array type 'a t = 'a array end)(Standard)
+module Container : Mappable = struct 
+  include Array type 'a t = 'a array 
+  let filter chooser = 
+    fold_left (fun acc x -> if chooser x then (append [|x|] acc) else acc) [||]
+end
+module StandardSystem = MakeSystem(Container)(Standard)

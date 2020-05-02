@@ -20,6 +20,10 @@ let bind base f =
   | Some b -> f b 
   | _ -> None
 let (>>=) = bind
+let map base f = 
+  match base with
+  | Some b -> Some (f b) 
+  | None -> None
 let parse_strand f = Array.map (fun base -> base >>= f)
 let strand_to_string strand = 
   strand 
