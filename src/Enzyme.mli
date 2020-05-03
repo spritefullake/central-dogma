@@ -7,7 +7,6 @@ end
 module type Mappable = sig 
   type 'a t 
   val map: ('a -> 'b) -> 'a t -> 'b t
-  val filter: ('a -> bool) -> 'a t -> 'a t
 end
 module Standard : System
 include System
