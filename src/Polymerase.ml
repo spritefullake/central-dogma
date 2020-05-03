@@ -77,42 +77,57 @@ module ExtendSystem (M : Mappable) (S : System) = struct
   let lift f x = Some (f x) 
   let (>>=) x f = match x with Some x -> f x | _ -> None
   let flat_map f x = x >>= f
-
-  let ligateD bases = map (flat_map glycosylateD) bases
-  let ligateR bases = map (flat_map glycosylateR) bases
+  
+  let incorporateD bases : 'a strand = map glycosylateD bases
+  let incorporateR bases : 'a strand = map glycosylateR bases
+  let ligateD bases : 'a strand = map (flat_map glycosylateD) bases
+  let ligateR bases : 'a strand = map (flat_map glycosylateR) bases
   
   let replicate = map (flat_map (lift replicate'))
   let transcribe = map (flat_map (lift transcribe'))
 end
-module MakeSystem (M : Mappable) (S : System) = struct 
-  include S
-  type 'a t = 'a M.t
-  type 'a strand = 'a t
+module Container : Mappable with type 'a t = 'a array = struct 
+  type 'a t = 'a array 
+  let map = Array.map
+end
+module StandardSystem = ExtendSystem(Container)(Standard)
+
+module Options : Mappable with type 'a t = 'a option array = struct
+  type 'a t = 'a option array 
+  let map_option f = function
+  | Some x -> Some (f x)
+  | None -> None
+  let map f = Array.map (map_option f)
+end
+module ConstructGrammar (S : System) (M : Mappable) = struct
+  include S 
+
   let map = M.map
-  type backbone = D of dna_bases strand | R of rna_bases strand
+  type 'a wrapper = 'a M.t
+  type _ action = 
+  | D: dna_bases wrapper -> dna_bases action 
+  | R: rna_bases wrapper -> rna_bases action
+  | Transcribe: dna_bases action -> rna_bases action 
+  | ReverseTranscribe: rna_bases action -> dna_bases action
+  | Replicate: 'a action -> 'a action
 
-  let replicate = function
-  | D strand -> D (map complementD strand) 
-  | R strand -> R (map complementR strand) 
+  let replicate : type a . a action -> a action = function
+  | D base -> D (map complementD base)
+  | R base -> R (map complementR base)
+  | _ as a -> a
 
-  let transcribe = function 
-  | D strand -> R (map complementR strand)
-  | R strand -> D (map complementD strand)
+  let transcribe = function
+  | D base -> R (map complementR base)
+  | action -> Transcribe action
 
-  let toDStrand strand = 
-    filter (function | #dna_bases -> true | _ -> false) strand
-  let toRStrand strand = 
-    filter (function | #rna_bases -> true | _ -> false) strand
-  (* Monadic strand conversion functions *)
-  let tryDStrand strand =
-    map (function | #dna_bases as b -> Some b | _ -> None) strand
-  let tryRStrand strand =
-    map (function | #rna_bases as b -> Some b | _ -> None) strand
+  let reverse_transcribe = function
+  | R base -> D (map complementD base)
+  | action -> ReverseTranscribe action
+
+  let rec interpret : type a . a action -> a action = function
+  | D _ as b -> b | R _ as b -> b 
+  | Transcribe action -> transcribe (interpret action)
+  | Replicate action -> replicate (interpret action)
+  | ReverseTranscribe action -> reverse_transcribe (interpret action)
+
 end
-
-module Container : Mappable = struct 
-  include Array type 'a t = 'a array 
-  let filter chooser = 
-    fold_left (fun acc x -> if chooser x then (append [|x|] acc) else acc) [||]
-end
-module StandardSystem = MakeSystem(Container)(Standard)
