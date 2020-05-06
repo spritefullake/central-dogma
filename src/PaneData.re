@@ -1,6 +1,5 @@
 open Codons;
 open NucleicAcid;
-open Bases;
 let toCodons = input =>
   input
   |> Js.String.split("")
@@ -22,7 +21,7 @@ type t = {
 let t_of_tuple = ((title, data, colorOn)) => {title, data, colorOn};
 
 let displayPane =
-    (~strand: array(option(_)), ~source, ~backbone, ~colorBases) => {
+    (~strand, ~source, ~backbone, ~colorBases) => {
   //let process = strand |> parse_then_string;
 
   open Polymerase.StandardSystem;
