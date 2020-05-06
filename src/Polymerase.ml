@@ -48,58 +48,12 @@ let reverse_transcriptase base =
   (* Reverse inverts the priority so A -> T instead of A -> U*)
   make_polymerase (List.rev transcribe_pairings) base
 
-type bases = [ `A | `T | `G | `C | `U ]
-
-open Enzyme
-(* Monads are building blocks, functors act top down 
-compare filtering (functor) to monadic operations
-*)
-module ExtendSystem (M : Mappable) (S : System) = struct
-  include S 
-  include M
-  
-  type backbone = D of dna_bases | R of rna_bases
-  type 'a strand = 'a option t
-
-  let replicate' = function
-  | D base -> D (complementD base)
-  | R base -> R (complementR base)
-  let transcribe' = function
-  | D base -> R (complementR base)
-  | R base -> D (complementD base)
-  let glycosylateD = function
-  | #dna_bases as b -> Some (D b)
-  | _ -> None
-  let glycosylateR = function 
-  | #rna_bases as b -> Some (R b) 
-  | _ -> None
-  
-  let lift f x = Some (f x) 
-  let (>>=) x f = match x with Some x -> f x | _ -> None
-  let flat_map f x = x >>= f
-  
-  let incorporateD bases : 'a strand = map glycosylateD bases
-  let incorporateR bases : 'a strand = map glycosylateR bases
-  let ligateD bases : 'a strand = map (flat_map glycosylateD) bases
-  let ligateR bases : 'a strand = map (flat_map glycosylateR) bases
-  
-  let replicate = map (flat_map (lift replicate'))
-  let transcribe = map (flat_map (lift transcribe'))
-end
-module Container : Mappable with type 'a t = 'a array = struct 
-  type 'a t = 'a array 
-  let map = Array.map
-end
-module StandardSystem = ExtendSystem(Container)(Standard)
-
-module Options : Mappable with type 'a t = 'a option array = struct
+module Options : Enzyme.Mappable with type 'a t = 'a option array = struct
   type 'a t = 'a option array 
-  let map_option f = function
-  | Some x -> Some (f x)
-  | None -> None
-  let map f = Array.map (map_option f)
+  let map f = Array.map (function | Some x -> Some (f x) | None -> None)
 end
-module ConstructGrammar (S : System) (M : Mappable) = struct
+
+module ConstructGrammar (S : Enzyme.System) (M : Enzyme.Mappable) = struct
   include S 
 
   let map = M.map
@@ -107,27 +61,49 @@ module ConstructGrammar (S : System) (M : Mappable) = struct
   type _ action = 
   | D: dna_bases wrapper -> dna_bases action 
   | R: rna_bases wrapper -> rna_bases action
-  | Transcribe: dna_bases action -> rna_bases action 
-  | ReverseTranscribe: rna_bases action -> dna_bases action
-  | Replicate: 'a action -> 'a action
+  
+  let to_baseD strand = M.map (function 
+  | #dna_bases as b -> Some b
+  | _ -> None) strand
+
+  let to_baseR strand = M.map (function
+  | #rna_bases as b -> Some b
+  | _ -> None) strand
 
   let replicate : type a . a action -> a action = function
   | D base -> D (map complementD base)
   | R base -> R (map complementR base)
-  | _ as a -> a
 
   let transcribe = function
   | D base -> R (map complementR base)
-  | action -> Transcribe action
 
   let reverse_transcribe = function
   | R base -> D (map complementD base)
-  | action -> ReverseTranscribe action
 
-  let rec interpret : type a . a action -> a action = function
+  let interpret : type a . a action -> a action = function
   | D _ as b -> b | R _ as b -> b 
-  | Transcribe action -> transcribe (interpret action)
-  | Replicate action -> replicate (interpret action)
-  | ReverseTranscribe action -> reverse_transcribe (interpret action)
 
+  let unwrap : type a . a action -> a wrapper = function
+  | D b -> b | R b -> b 
+
+  let to_strings : type a . a action -> string wrapper = function
+  | D bases -> map to_string bases
+  | R bases -> map to_string bases
 end
+module StandardSystem : sig 
+  include Enzyme.System
+  type 'a wrapper = 'a option array 
+  type _ action = 
+  | D: dna_bases wrapper -> dna_bases action 
+  | R: rna_bases wrapper -> rna_bases action
+  val transcribe: dna_bases action -> rna_bases action
+  val reverse_transcribe: rna_bases action -> dna_bases action
+  val replicate: 'a action -> 'a action
+  val unwrap: 'a action -> 'a wrapper
+  val to_baseD: [> dna_bases] wrapper -> dna_bases option wrapper 
+  val to_baseR: [> rna_bases] wrapper -> rna_bases option wrapper
+  val to_strings: 'a action -> string wrapper
+  
+end = ConstructGrammar(Enzyme.Standard)(Options)
+open StandardSystem
+let mat = replicate (transcribe (replicate (D [| Some `T |])))
