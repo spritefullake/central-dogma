@@ -20,46 +20,64 @@ type t = {
   colorOn: bool,
 };
 let t_of_tuple = ((title, data, colorOn)) => {title, data, colorOn};
-open Polymerase;
-let displayPane = (~strand, ~source, ~backbone, ~colorBases) => {
-  let process = strand |> parse_then_string;
-  let dnaPane = [|
-    ("Transcribed RNA", process(rna_polymerase), colorBases),
-    ("Replicated DNA", process(dna_polymerase), colorBases),
-    ("Codons", process(rna_polymerase) |> toCodons, colorBases),
-    (
-      "Anticodons",
-      process(x => x |> rna_polymerase >>= reverse_transcriptase) |> toCodons,
-      colorBases,
-    ),
-    (
-      "Amino Acids (One Letter Code)",
-      process(rna_polymerase) |> toAACode(~source, ~code=`One),
-      false,
-    ),
-    (
-      "Amino Acids (Three Letter Code)",
-      process(rna_polymerase) |> toAACode(~source, ~code=`Three),
-      false,
-    ),
-  |];
-  let rnaPane = [|
-    ("Reverse-transcribed DNA", process(reverse_transcriptase), colorBases),
-    ("Codons", strand_to_string(strand) |> toCodons, colorBases),
-    ("Anticodons", process(rna_polymerase) |> toCodons, colorBases),
-    (
-      "Amino Acids (One Letter Code)",
-      strand_to_string(strand) |> toAACode(~source, ~code=`One),
-      false,
-    ),
-    (
-      "Amino Acids (Three Letter Code)",
-      strand_to_string(strand) |> toAACode(~source, ~code=`Three),
-      false,
-    ),
-  |];
+
+let displayPane =
+    (~strand: array(option(_)), ~source, ~backbone, ~colorBases) => {
+  //let process = strand |> parse_then_string;
+
+  open Polymerase.StandardSystem;
+  let m_unwrap = x =>
+    switch (x) {
+    | Some(x) => x
+    | None => None
+    };
+  let process = strand =>
+    strand
+    |> to_strings
+    |> Array.map(x =>
+         switch (x) {
+         | Some(x) => x
+         | None => ""
+         }
+       )
+    |> Js.Array.joinWith("");
+
+  let dnaPane = strand => {
+    let s = D(strand |> to_baseD |> Array.map(m_unwrap));
+    let transcribedRNA = transcribe(s) |> process;
+    let replicatedDNA = replicate(s) |> process;
+    let codons = transcribe(s) |> process |> toCodons;
+    let anticodons =
+      transcribe(s) |> reverse_transcribe |> process |> toCodons;
+    let aminoAcids = transcribe(s) |> process;
+    let aminoAcids1 = aminoAcids |> toAACode(~source, ~code=`One);
+    let aminoAcids3 = aminoAcids |> toAACode(~source, ~code=`Three);
+    [|
+      ("Transcribed RNA", transcribedRNA, colorBases),
+      ("Replicated DNA", replicatedDNA, colorBases),
+      ("Codons", codons, colorBases),
+      ("Anticodons", anticodons, colorBases),
+      ("Amino Acids (One Letter Code)", aminoAcids1, false),
+      ("Amino Acids (Three Letter Code)", aminoAcids3, false),
+    |];
+  };
+  let rnaPane = strand => {
+    let s = R(strand |> to_baseR |> Array.map(m_unwrap));
+    let reverseTranscribedDNA = reverse_transcribe(s) |> process;
+    let codons = process(s) |> toCodons;
+    let anticodons = reverseTranscribedDNA |> toCodons;
+    let aminoAcids1 = process(s) |> toAACode(~source, ~code=`One);
+    let aminoAcids3 = process(s) |> toAACode(~source, ~code=`Three);
+    [|
+      ("Reverse-transcribed DNA", reverseTranscribedDNA, colorBases),
+      ("Codons", codons, colorBases),
+      ("Anticodons", anticodons, colorBases),
+      ("Amino Acids (One Letter Code)", aminoAcids1, false),
+      ("Amino Acids (Three Letter Code)", aminoAcids3, false),
+    |];
+  };
   switch (backbone) {
-  | DNA => dnaPane |> Array.map(t_of_tuple)
-  | RNA => rnaPane |> Array.map(t_of_tuple)
+  | DNA => dnaPane(strand) |> Array.map(t_of_tuple)
+  | RNA => rnaPane(strand) |> Array.map(t_of_tuple)
   };
 };

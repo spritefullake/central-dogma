@@ -1,22 +1,25 @@
 open Bases;
 open NucleicAcid;
+open Polymerase.StandardSystem;
 [@react.component]
 let make = () => {
   let (baseType, setBaseType) = React.useState(() => DNA);
   let updateBaseType = e => {
-    let value = e->ReactEvent.Form.target##value->from_string;
-    setBaseType(_ => value);
+    
+    let value = e->ReactEvent.Form.target##value;
+    let newBaseType = value->from_string;
+    setBaseType(_ => newBaseType);
   };
   let (strand, setStrand) = React.useState(() => [||]);
   let updateStrand = e => {
-    let filterBaseType = x => choose(x, baseType);
     //Ensure only valid base inputs are accepted
     let value =
       e->ReactEvent.Form.target##value
       |> Js.String.toUpperCase
-      |> Js.String.split("")
-      |> Array.map(letter => letter |> to_base >>= filterBaseType);
-    setStrand(_ => value);
+      |> Js.String.split("");
+    let bases = Array.map(to_base,value);
+    setStrand(_ => bases);
+    
   };
   let (colorBases, setColorBases) = React.useState(() => true);
   <>
