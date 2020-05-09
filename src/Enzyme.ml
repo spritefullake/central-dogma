@@ -12,6 +12,7 @@ module type System = sig
   val replicate: 'a backbone -> 'a backbone 
   val transcribe: dna backbone -> rna backbone 
   val reverse_transcribe: rna backbone -> dna backbone
+  val to_string: 'a backbone -> string
 end
 module Standard : System = struct
   type dna = [`A | `T | `G | `C] 
@@ -32,6 +33,12 @@ module Standard : System = struct
   | `G -> R `C | `C -> R `G 
   | `T -> R `A 
   | _ -> None
+  let base_to_string = function 
+  | `A -> "A" | `T -> "T" | `G -> "G" | `C -> "C" | `U -> "U"
+  let to_string : type a . a backbone -> string = function 
+  | D base -> base_to_string base 
+  | R base -> base_to_string base 
+  | None -> ""
   let toDNA = function #dna as base -> D base | _ -> None
   let toRNA = function #rna as base -> R base | _ -> None
   
