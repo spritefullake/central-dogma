@@ -1,6 +1,5 @@
 open Bases;
 open NucleicAcid;
-open Polymerase.StandardSystem;
 [@react.component]
 let make = () => {
   let (baseType, setBaseType) = React.useState(() => DNA);
