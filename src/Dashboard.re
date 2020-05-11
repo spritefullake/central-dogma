@@ -1,4 +1,3 @@
-open Bases;
 open NucleicAcid;
 [@react.component]
 let make = () => {
@@ -16,8 +15,7 @@ let make = () => {
       e->ReactEvent.Form.target##value
       |> Js.String.toUpperCase
       |> Js.String.split("");
-    let bases = Array.map(to_base,value);
-    setStrand(_ => bases);
+    setStrand(_ => value);
     
   };
   let (colorBases, setColorBases) = React.useState(() => true);

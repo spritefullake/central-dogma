@@ -1,4 +1,3 @@
-open Bases;
 [@react.component]
 let make = (~strand, ~onChange, ~children) => {
   <>
@@ -8,7 +7,7 @@ let make = (~strand, ~onChange, ~children) => {
     <input
       id="dna"
       placeholder="Enter the template strand"
-      value={strand_to_string(strand)}
+      value={strand |> Js.Array.joinWith("")}
       onChange
     />
   </>
