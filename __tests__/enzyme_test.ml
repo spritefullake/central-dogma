@@ -1,9 +1,9 @@
 open Jest
 open Expect
-open Polymerase
+open Enzyme
 
 let () =
-describe "Polymerase" (fun () ->
+describe "Enzyme" (fun () ->
 
     test "Test stub" (fun () -> 
         expect true |> toEqual true

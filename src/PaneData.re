@@ -23,11 +23,11 @@ let t_of_tuple = ((title, data, colorOn)) => {title, data, colorOn};
 let displayPane =
     (~strand: array(string), ~source, ~backbone, ~colorBases) => {
   //let process = strand |> parse_then_string;
-  open Polymerase.Poly;
-  let process = s => s |> Polymerase.Poly.to_string |> Js.Array.joinWith("");
+  open Enzyme.Poly;
+  let process = s => s |> Enzyme.Poly.to_string |> Js.Array.joinWith("");
   let dnaPane = strand => {
     
-    let s = strand |> Array.map(Polymerase.Poly.from_string) |> toDNA 
+    let s = strand |> Array.map(Enzyme.Poly.from_string) |> toDNA 
     let transcribedRNA = transcribe(s) |> process;
     let replicatedDNA = replicate(s) |> process;
     let codons = transcribe(s) |> process |> toCodons;
@@ -46,7 +46,7 @@ let displayPane =
     |];
   };
   let rnaPane = strand => {
-    let s = strand |> Array.map(Polymerase.Poly.from_string) |> toRNA;
+    let s = strand |> Array.map(Enzyme.Poly.from_string) |> toRNA;
     let reverseTranscribedDNA = reverse_transcribe(s) |> process;
     let codons = process(s) |> toCodons;
     let anticodons = reverseTranscribedDNA |> toCodons;
