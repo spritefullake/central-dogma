@@ -49,7 +49,7 @@ end
 module MakeSystem (S : System) = struct
   include S 
   let toDNA base = D (complementD base |> complementD) 
-  let toRNA base = D (complementR base |> complementR) 
+  let toRNA base = R (complementR base |> complementR) 
   let replicate : type a . a backbone -> a backbone = function
   | D base -> D (complementD base)
   | R base -> R (complementR base)
@@ -71,7 +71,7 @@ module Standard = MakeSystem(struct
   let base_to_string = function
   | A -> "A" | T -> "T" | G -> "G" | C -> "C" | U -> "U" | _ -> ""
   let from_string = function
-  | "A" -> Some A | "T" -> Some T | "G" -> Some G | "U" -> Some U | _ -> None
+  | "A" -> Some A | "T" -> Some T | "G" -> Some G | "U" -> Some U | "C" -> Some C | _ -> None
 end)
 module Hachimoji = MakeSystem(struct
   include Standard  
@@ -88,7 +88,9 @@ end)
   Allows defining a mappable container across 
   which to apply the functions for brevity. 
   ### Note that the from_string function is 
-  excluded from being generically mapped.
+  excluded from being generically mapped; 
+  this is to avoid nested options like Some (Some _)
+  and semantically from_string only makes sense with a string input.
 *)
 module MakeMappedSystem (S : System) (M : Mappable) = struct
   include MakeSystem(S) 
@@ -100,4 +102,12 @@ module MakeMappedSystem (S : System) (M : Mappable) = struct
   let reverse_transcribe bases = map reverse_transcribe bases 
   let to_string bases = map to_string bases
 end
-module Hoption = MakeMappedSystem (Standard)(struct type 'a t = 'a option let map f = function Some x -> Some (f x) | None -> None end)
+module OptionMap : Mappable with type 'a t = 'a option = struct
+  type 'a t = 'a option
+  let map f = function Some x -> Some (f x) | None -> None
+end
+module ArrayOptions : Mappable with type 'a t = 'a OptionMap.t array = struct
+  type 'a t = 'a OptionMap.t array 
+  let map f = Array.map (OptionMap.map f) 
+end
+module Poly = MakeMappedSystem(Standard)(ArrayOptions)
