@@ -46,7 +46,7 @@ end
   replication, transcription and reverse transcription capabilities.
   Mimics the actions of the polymerases and transcriptases. 
 *)
-module MakeSystem (S : System) = struct
+module ExtendSystem (S : System) = struct
   include S 
   let toDNA base = D (complementD base |> complementD) 
   let toRNA base = R (complementR base |> complementR) 
@@ -61,7 +61,7 @@ module MakeSystem (S : System) = struct
   | D base -> base_to_string base 
   | R base -> base_to_string base 
 end
-module Standard = MakeSystem(struct
+module Standard = ExtendSystem(struct
   include Baseline 
   type bases += A | T | G | C | U 
   let complementD = function 
@@ -73,7 +73,7 @@ module Standard = MakeSystem(struct
   let from_string = function
   | "A" -> Some A | "T" -> Some T | "G" -> Some G | "U" -> Some U | "C" -> Some C | _ -> None
 end)
-module Hachimoji = MakeSystem(struct
+module Hachimoji = ExtendSystem(struct
   include Standard  
   type bases += S | B | P | Z
   let complementD = function 
@@ -93,7 +93,7 @@ end)
   and semantically from_string only makes sense with a string input.
 *)
 module MakeMappedSystem (S : System) (M : Mappable) = struct
-  include MakeSystem(S) 
+  include ExtendSystem(S) 
   include M 
   let toDNA bases = map toDNA bases
   let toRNA bases = map toRNA bases  
