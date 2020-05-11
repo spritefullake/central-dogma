@@ -1,20 +1,33 @@
 open Enzyme
-module Options : Mappable with type 'a t = 'a option array = struct
-  type 'a t = 'a option array 
-  let map f = Array.map (function | Some x -> Some (f x) | None -> None)
+(* Any structure that can be mapped over like Option or Array*)
+module type Mappable = sig 
+  type 'a t 
+  val map: ('a -> 'b) -> 'a t -> 'b t
 end
-module Machinery (S : Machinery) (M : Mappable) = struct
-  include S
-  let toDNA = M.map S.toDNA 
-  let toRNA = M.map S.toRNA
-  let replicate bases = M.map S.replicate bases
-  let transcribe = M.map S.transcribe
-  let reverse_transcribe = M.map S.reverse_transcribe
-  let to_string bases = M.map S.to_string bases
+(* 
+  Allows defining a mappable container across 
+  which to apply the functions for brevity. 
+  ### Note that the from_string function is 
+  excluded from being generically mapped; 
+  this is to avoid nested options like Some (Some _)
+  and semantically from_string only makes sense with a string input.
+*)
+module MakeMappedSystem (S : System) (M : Mappable) = struct
+  include ExtendSystem(S) 
+  include M 
+  let toDNA bases = map toDNA bases
+  let toRNA bases = map toRNA bases  
+  let replicate bases = map replicate bases
+  let transcribe bases = map transcribe bases 
+  let reverse_transcribe bases = map reverse_transcribe bases 
+  let to_string bases = map to_string bases
 end
-
-module Poly = Machinery(Enzyme)(Options)
-
-let sham : Poly.bases option array = [| Some `A; Some `C; Some `T; Some `U; None; None |]
-let ram = sham |> Array.fold_left (fun acc x -> x |> function | Some x -> Array.append acc [|x|] | None -> acc) [||]
-let tam = sham |> Poly.toDNA |> Poly.transcribe |> Poly.replicate |> Poly.reverse_transcribe |> Poly.transcribe
+module OptionMap : Mappable with type 'a t = 'a option = struct
+  type 'a t = 'a option
+  let map f = function Some x -> Some (f x) | None -> None
+end
+module ArrayOptions : Mappable with type 'a t = 'a OptionMap.t array = struct
+  type 'a t = 'a OptionMap.t array 
+  let map f = Array.map (OptionMap.map f) 
+end
+module Poly = MakeMappedSystem(Standard)(ArrayOptions)
