@@ -4,7 +4,7 @@ let chunk size input =
     | "" -> acc
     | _ when (String.length input <= size) -> input::acc
     | _ -> 
-        let head = input |. (String.sub 0 size) in
+        let head = (String.sub input 0 size) in
         let remaining : int = (input |> String.length) - size in
         let tail = remaining |> (String.sub input size) in
         loop (head::acc) tail
