@@ -77,5 +77,5 @@ module Hachimoji = ExtendSystem(struct
   let base_to_string = function
   | S -> "S" | B -> "B" | P -> "P" | Z -> "Z" | base -> Standard.base_to_string base
   let from_string = function
-  | "S" -> Some S | "B" -> Some B | "Z" -> Some Z | "P" -> Some P | _ -> None
+  | "S" -> Some S | "B" -> Some B | "Z" -> Some Z | "P" -> Some P | base -> Standard.from_string base
 end)
