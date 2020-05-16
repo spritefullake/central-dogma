@@ -10,6 +10,27 @@ let chunk size input =
         loop (head::acc) tail
   in loop [] input |> List.rev
 
+let group_by_order  ?(reverse = false) predicate items = 
+  let rec loop acc pin res = function 
+    | [] -> 
+      if reverse then
+        (acc@[pin])::res 
+      else 
+        res@[pin::acc]
+    | head::tail -> 
+      if predicate head pin then
+        loop (head::acc) head res tail 
+      else
+        if reverse then
+          loop [] head ((acc@[pin])::res) tail
+        else 
+          loop [] head (res@[pin::acc]) tail
+        in
+  match items with 
+  | [] -> [] 
+  | h::t -> 
+    loop [] h [] t
+
 let take size input =
   let rec loop input size =
     match input, size with
