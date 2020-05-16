@@ -23,7 +23,7 @@ module Styles = {
 let make = (~strand, ~colorOn) => {
   let colorBases = (index, bases) => {
     switch (bases) {
-    | [] => <span />
+    | [] => React.string("")
     | [base, ..._] =>
       let style = Styles.color(colorOn, base);
       let key = index |> string_of_int;

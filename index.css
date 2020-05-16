@@ -44,7 +44,7 @@ label{
     grid-area: header;
     font-size: 1.2rem;
 }
-input#dna{
+#dna{
     grid-area: input;
     font-size: 1.5rem;
     letter-spacing: 0.1rem;
@@ -74,7 +74,7 @@ select{
     #root{
         grid-template-columns: 80vw;
     }
-    input#dna{
+    #dna{
         font-size: 1rem;
     }
 }
