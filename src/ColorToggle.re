@@ -2,10 +2,8 @@
 let make = (~setToggle, ~toggle) => {
   React.useEffect0(() => {
     open Dom.Storage;
-    Js.log("Using effect");
     switch (localStorage |> getItem("colorBases")) {
-    | None =>
-      localStorage |> setItem("colorBases", toggle |> string_of_bool);
+    | None => localStorage |> setItem("colorBases", toggle |> string_of_bool)
     | Some(t) => setToggle(_ => t |> bool_of_string) |> ignore
     };
     None;
