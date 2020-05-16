@@ -21,35 +21,26 @@ module Styles = {
 
 [@react.component]
 let make = (~strand, ~colorOn) => {
-  let groupByOrder = (predicate, bases) => {
+  let colorBases = (index, bases) => {
     switch (bases) {
-    | [||] => [||]
-    | _ =>
-      let pin = ref(bases[0]);
-      let res = ref([||]);
-      let loop = (acc, x) =>
-        if (predicate(x, pin^)) {
-          [|x|]->Array.append(acc);
-        } else {
-          pin := x;
-          res := (res^)->Array.append([|acc|]);
-          [|x|];
-        };
-      let final = loop->Array.fold_left([||], bases);
-      res := (res^)->Array.append([|final|]);
-      res^;
+    | [] => <span />
+    | [base, ..._] =>
+      let style = Styles.color(colorOn, base);
+      let key = index |> string_of_int;
+      let content =
+        bases |> Array.of_list |> Js.Array.joinWith("") |> React.string;
+      <span style key> content </span>;
     };
   };
-  let bases = Js.String.split("", strand) |> groupByOrder((x, y) => x == y);
-  let styled =
-    (
-      (index, bases) => {
-        let base = bases[0];
-        let style = Styles.color(colorOn, base);
-        <span style key={index |> string_of_int}> {bases |> Js.Array.joinWith("") |> React.string} </span>;
-      }
-    )
-    ->Array.mapi(bases)
-    ->React.array;
-  <p className="base-output"> styled </p>;
+
+  let bases = () =>
+    Js.String.split("", strand)
+    |> Array.to_list
+    |> Chunk.group_by_order((x, y) => x == y);
+  let styled = () =>
+    colorBases->List.mapi(bases())->Array.of_list->React.array;
+
+  <p className="base-output">
+    {colorOn ? styled() : React.string(strand)}
+  </p>;
 };
