@@ -21,7 +21,6 @@ header h1{
     text-align: center;
     margin-top: 0;
 }
-
 #about{
     text-align: center;
     height: 20rem;
@@ -90,12 +89,20 @@ select{
  * max-width for minimized desktop window */
 @media only screen and (max-device-width: 610px) {
     :root{
-        font-size: 20px;
+        font-size: 14px;
     }
     #root{
-        grid-template-columns: 80vw;
+        grid-template-columns: 88vw;
     }
-    #dna{
-        font-size: 1rem;
+    #output{
+        max-height: 60vh;
+    }
+    #about{
+        font-size: 0.8rem;
+        height: 8rem;
+        padding-top: 0.1rem;
+    }
+    #about p{
+        font-size: 0.8rem;
     }
 }
