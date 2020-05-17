@@ -1,6 +1,6 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
-const outputDir = path.resolve(__dirname, "build/")
+const outputDir = path.resolve(__dirname, "docs/")
 const CompressionPlugin = require('compression-webpack-plugin')
 const isProd = process.env.NODE_ENV === "production"
 module.exports = {
