@@ -1,9 +1,8 @@
 const path = require("path")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const outputDir = path.resolve(__dirname, "build/")
-
+const CompressionPlugin = require('compression-webpack-plugin')
 const isProd = process.env.NODE_ENV === "production"
-
 module.exports = {
   entry: "./src/Index.bs.js",
   mode: isProd ? "production" : "development",
@@ -17,7 +16,19 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "indexProduction.html",
       inject: true
-    })
+    }),
+      new CompressionPlugin({
+        filename: '[path].br[query]',
+        algorithm: 'brotliCompress',
+        test: /\.(js|css|html|svg|tsv)$/,
+        compressionOptions: {
+          // zlib’s `level` option matches Brotli’s `BROTLI_PARAM_QUALITY` option.
+          level: 11,
+        },
+        threshold: 10240,
+        minRatio: 0.8,
+        deleteOriginalAssets: false,
+      }),
   ],
   devServer: {
     compress: true,

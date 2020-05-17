@@ -2,7 +2,7 @@
   "name": "genetics",
   "version": "0.1.0",
   "scripts": {
-    "build": "bsb -make-world",
+    "build": "bsb -make-world && webpack -p",
     "start": "bsb -make-world -w -ws _",
     "clean": "bsb -clean-world",
     "test": "jest",
@@ -10,8 +10,8 @@
     "re:build": "bsb -make-world -clean-world",
     "re:watch": "bsb -make-world -clean-world -w",
     "dev:server": "moduleserve ./ --port 8000",
-    "dev:serve": "webpack-dev-server --open",
-    "exp:serve": "node server.js"
+    "dev:serve": "NODE_ENV=development node server.js",
+    "prod:serve": "NODE_ENV=production node server.js"
   },
   "keywords": [
     "BuckleScript"
@@ -21,6 +21,7 @@
   "devDependencies": {
     "@glennsl/bs-jest": "^0.5.1",
     "bs-platform": "^7.2.2",
+    "compression-webpack-plugin": "^4.0.0",
     "css-loader": "^3.4.2",
     "express": "^4.17.1",
     "file-loader": "^6.0.0",
@@ -34,9 +35,10 @@
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
+    "bs-css": "^12.2.0",
     "bs-css-dom": "^1.2.0",
     "bs-fetch": "^0.5.2",
-    "reason-react": "^0.7.0"
+    "reason-react": "^0.7.1"
   },
   "jest": {
     "moduleFileExtensions": [
